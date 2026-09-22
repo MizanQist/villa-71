@@ -1076,7 +1076,7 @@ h3,h4{margin:0;font-weight:500}
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
     return true;
   }
-  function upload(img){ gl.bindTexture(gl.TEXTURE_2D,tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); gl.generateMipmap(gl.TEXTURE_2D); }
+  function upload(img){ gl.bindTexture(gl.TEXTURE_2D,tex); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,img); gl.generateMipmap(gl.TEXTURE_2D); }
   function size(){ var dpr=Math.min(w.devicePixelRatio||1,2), W=Math.round(cv.clientWidth*dpr), H=Math.round(cv.clientHeight*dpr); if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; } if(gl) gl.viewport(0,0,W,H); }
   function draw(){
     if(!gl||!cv.width) return;
@@ -1090,27 +1090,32 @@ h3,h4{margin:0;font-weight:500}
     idle++; if(!dragging && !gyroOn && idle>240 && !reduce) yaw+=.0006;
     draw(); raf=requestAnimationFrame(loop);
   }
-  /* rooms are fetched as blobs ahead of the viewer: the current room first, then its neighbours, then the rest */
-  var N=ROOMS.length, store=[], pump=[], running=0;
+  /* rooms are fetched ahead of the viewer as compressed blobs (current, then neighbours, then the rest) and decoded
+     with createImageBitmap at display time; anything that fails falls back to a plain image load of the same file */
+  var N=ROOMS.length, store=[], pump=[], running=0, canBitmap=typeof w.createImageBitmap==='function';
   function noop(){}
   function src(i,kind){ return 'assets/vr/'+(kind==='pre'?'p/':'')+ROOMS[i][0]+'.jpg'; }
   function ensure(i,kind){
     var st=store[i]||(store[i]={}); var key=kind+'P';
     if(!st[key]){
-      st[key]=(w.fetch?fetch(src(i,kind),{cache:'force-cache'}).then(function(r){ if(!r.ok) throw 0; return r.blob(); }).then(function(b){ return URL.createObjectURL(b); }):Promise.reject(0))
-        .catch(function(){ return src(i,kind); }).then(function(u){ st[kind]=u; return u; });
+      st[key]=(w.fetch&&canBitmap?fetch(src(i,kind),{cache:'force-cache'}).then(function(r){ if(!r.ok) throw 0; return r.blob(); }):Promise.reject(0))
+        .catch(function(){ return null; }).then(function(b){ st[kind]=b||true; return b; });
     }
     return st[key];
   }
   function loadImg(url){ return new Promise(function(res,rej){ var im=new Image(); im.onload=function(){ if(im.decode){ im.decode().then(function(){ res(im); },function(){ res(im); }); } else res(im); }; im.onerror=function(){ rej(0); }; im.src=url; }); }
+  function drawable(i,kind){
+    var url=src(i,kind);
+    return ensure(i,kind).then(function(b){ if(b && canBitmap){ return createImageBitmap(b).catch(function(){ return loadImg(url); }); } return loadImg(url); });
+  }
   function pumpNext(){ while(running<2 && pump.length && vrOpen){ (function(j){ running++; ensure(j,'pre').then(function(){ return ensure(j,'full'); }).catch(noop).then(function(){ running--; pumpNext(); }); })(pump.shift()); } }
   function prefetchAround(i){ pump=[]; for(var k=1;k<N;k++){ [i+k,i-k].forEach(function(j){ j=(j+N)%N; if(j!==i && pump.indexOf(j)<0 && !(store[j]&&store[j].full)) pump.push(j); }); } pumpNext(); }
   function fail(){ vrmsg.innerHTML='This room could not be loaded · <a href="'+VR_URL+'" target="_blank" rel="noopener">open the tour on Kuula</a>'; }
-  function show(i,my,url,isFull){
-    return loadImg(url).then(function(im){
-      if(my!==seq) return; var st=store[i];
-      if(isFull) st.sharp=my; else if(st.sharp===my) return;
-      upload(im); size(); draw(); vr.classList.add('ready'); cv.classList.add('on');
+  function show(i,my,kind,isFull){
+    return drawable(i,kind).then(function(im){
+      if(my!==seq){ if(im.close) im.close(); return; } var st=store[i];
+      if(isFull) st.sharp=my; else if(st.sharp===my){ if(im.close) im.close(); return; }
+      upload(im); if(im.close) im.close(); size(); draw(); vr.classList.add('ready'); cv.classList.add('on');
     });
   }
   function go(i){
@@ -1119,10 +1124,10 @@ h3,h4{margin:0;font-weight:500}
     $$('#vrthumbs button').forEach(function(b,k){ b.classList.toggle('on',k===i); b.setAttribute('aria-selected',k===i?'true':'false'); if(k===i && b.scrollIntoView) b.scrollIntoView({block:'nearest',inline:'center',behavior:reduce?'auto':'smooth'}); });
     vr.classList.remove('ready'); cv.classList.remove('on'); vrmsg.textContent='Loading the room'; yaw=0; pitch=0; vy=0; vp=0; idle=0;
     var st=store[i]||(store[i]={});
-    if(st.full){ show(i,my,st.full,true).catch(function(){ if(my===seq) fail(); }); }
+    if(st.full){ show(i,my,'full',true).catch(function(){ if(my===seq) fail(); }); }
     else {
-      ensure(i,'full').then(function(u){ if(my!==seq) return; return show(i,my,u,true); }).catch(function(){ if(my===seq) fail(); });
-      ensure(i,'pre').then(function(u){ if(my!==seq || st.sharp===my) return; return show(i,my,u,false); }).catch(noop);
+      show(i,my,'full',true).catch(function(){ if(my===seq) fail(); });
+      show(i,my,'pre',false).catch(noop);
     }
     prefetchAround(i);
   }
