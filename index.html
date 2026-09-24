@@ -184,6 +184,14 @@ h3,h4{margin:0;font-weight:500}
 .stat .l{font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:10px;font-weight:500}
 @media (max-width:1000px){.stats{grid-template-columns:repeat(3,1fr)}.stat:nth-child(3n){border-right:0}.stat:nth-child(-n+3){border-bottom:1px solid var(--line)}}
 @media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(3n){border-right:1px solid var(--line)}.stat:nth-child(2n){border-right:0}.stat:nth-child(-n+4){border-bottom:1px solid var(--line)}.stat:nth-child(-n+3){border-bottom:1px solid var(--line)}}
+.story{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,.6fr);gap:clamp(24px,4vw,64px);align-items:start;margin:0 0 clamp(28px,4vh,52px)}
+.story .lede{max-width:none}
+.story .body{color:var(--muted)}
+.feat{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.feat li{padding:12px 0;border-bottom:1px solid var(--line)}
+.feat li b{display:block;font-family:var(--font-d);font-weight:500;font-size:20px;line-height:1.15}
+.feat li span{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+@media (max-width:820px){.story{grid-template-columns:1fr}}
 .wide{aspect-ratio:16/9.6;max-height:84vh}
 .wide img{object-position:50% 42%}
 @media (max-width:720px){.wide{aspect-ratio:4/4.4}}
@@ -207,40 +215,6 @@ h3,h4{margin:0;font-weight:500}
 @media (max-width:820px){.trip{grid-template-columns:1fr 1fr}.trip .fr:first-child{grid-column:1/-1;aspect-ratio:1643/1500}.duo{grid-template-columns:1fr}.duo .col{grid-template-rows:auto;grid-template-columns:1fr 1fr}.mats{grid-template-columns:1fr}.mat{border-right:0;border-bottom:1px solid var(--line)}.mat:last-child{border-bottom:0}}
 @media (max-width:520px){.duo .col{grid-template-columns:1fr}}
 
-/* ——— four options ——— */
-.cmp{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(300px,.95fr);gap:clamp(20px,3.4vw,56px);align-items:start}
-.stage{position:relative;aspect-ratio:1800/1969;max-height:86vh;width:100%;margin:0 auto;overflow:hidden;border-radius:0 var(--r) 0 0;background:var(--bg-2);touch-action:pan-y;user-select:none;-webkit-user-select:none}
-.stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s var(--ease);pointer-events:none}
-.stage img.on{opacity:1}
-.stage .recl{position:absolute;inset:0;clip-path:inset(0 50% 0 0);transition:none}
-.stage .recl img{opacity:1}
-.stage .handle{position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,.85);transform:translateX(-.5px);cursor:ew-resize;pointer-events:none}
-.stage .handle b{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:1px solid rgba(255,255,255,.9);background:rgba(21,19,15,.42);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;gap:6px}
-.stage .handle b::before,.stage .handle b::after{content:"";width:6px;height:6px;border-left:1px solid #fff;border-top:1px solid #fff}
-.stage .handle b::before{transform:rotate(-45deg)}.stage .handle b::after{transform:rotate(135deg)}
-.stage .lab{position:absolute;bottom:14px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:#fff;background:rgba(21,19,15,.55);backdrop-filter:blur(6px);padding:8px 12px;border-radius:2px;pointer-events:none;transition:opacity .4s}
-.stage .lab.l{left:14px}.stage .lab.r{right:14px}
-.stage.solo .recl,.stage.solo .handle,.stage.solo .lab.l{opacity:0;visibility:hidden}
-.stage.solo .lab.r{right:auto;left:14px}
-.stage .hint{position:absolute;top:14px;left:14px;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.85);background:rgba(21,19,15,.45);padding:7px 10px;border-radius:2px;pointer-events:none;transition:opacity .4s}
-.stage.solo .hint,.stage.moved .hint{opacity:0}
-.opts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 20px}
-.opt{position:relative;text-align:left;padding:14px 12px 12px;border:1px solid var(--line);border-radius:0 14px 0 0;transition:border-color .3s,background .3s}
-.opt .a{font-family:var(--font-d);font-weight:300;font-size:34px;line-height:1;display:block}
-.opt .t{display:block;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:6px;font-weight:500}
-.opt .sw{position:absolute;right:10px;top:10px;width:22px;height:22px;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
-.opt.on{border-color:var(--acc);background:var(--acc-soft)}
-.opt.rec::after{content:"Recommended";position:absolute;left:12px;bottom:-9px;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--basalt);background:var(--trav);padding:3px 7px;border-radius:2px}
-.odesc{min-height:60px;margin:0 0 18px}
-.odesc b{font-family:var(--font-d);font-weight:400;font-size:clamp(24px,2.2vw,32px);display:block;line-height:1.1;margin-bottom:6px}
-.odesc b em{font-style:italic;color:var(--acc)}
-.odesc span{font-size:14px;color:var(--muted)}
-.aux{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.aux .fr{aspect-ratio:1800/1969}
-.aux .fr.gate img{object-position:50% 50%}
-@media (max-width:900px){.cmp{grid-template-columns:1fr}.opts{grid-template-columns:repeat(4,1fr)}}
-@media (max-width:520px){.opts{grid-template-columns:repeat(2,1fr);gap:10px}.opt.rec::after{bottom:-8px}}
-
 /* ——— grounds ——— */
 .gg{display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(10px,1.6vw,22px);grid-auto-flow:dense}
 .gg .fr{aspect-ratio:var(--ar,4/5)}
@@ -248,8 +222,9 @@ h3,h4{margin:0;font-weight:500}
 @media (max-width:900px){.gg .s3,.gg .s4,.gg .s5{grid-column:span 6}.gg .s7,.gg .s8{grid-column:span 12}}
 @media (max-width:520px){.gg .s3,.gg .s4,.gg .s5,.gg .s6{grid-column:span 12}}
 .site{display:grid;grid-template-columns:1fr;gap:18px;margin-top:clamp(28px,4vh,52px)}
-.site .fr{aspect-ratio:2480/1218;cursor:pointer}
-.site .fr img{object-fit:contain;background:#fff}
+.site .fr{aspect-ratio:3103/1334;cursor:pointer;background:transparent}
+.site .fr img{object-fit:contain;filter:var(--plan-filter)}
+.site .fr .k{background:none;color:var(--muted)}
 .dims{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .dims b{font-family:var(--font-d);font-weight:400;font-size:20px;letter-spacing:0;text-transform:none;color:var(--fg);margin-right:6px}
 
@@ -466,7 +441,7 @@ h3,h4{margin:0;font-weight:500}
     <div class="head">
       <div><p class="eyebrow rv"><span class="idx">02</span>At a glance</p>
       <h2 class="title rv" style="--i:1">Three floors, seven suites, <em>one garden wall.</em></h2></div>
-      <p class="lede rv" style="--i:2">A family house on a Guzape hillside: guest chalet, staff quarters, pool, cinema and gym behind one gate on a 2,000 m² plot.</p>
+      <p class="lede rv" style="--i:2">A private luxury retreat on a Guzape hillside, designed for resort-style living: guest chalet, staff quarters, pool, cinema and gym behind one gate on a 2,000 m² plot.</p>
     </div>
     <div class="stats rv" style="--i:2">
       <div class="stat"><div class="n tn">7</div><div class="l">En-suite suites</div></div>
@@ -474,13 +449,26 @@ h3,h4{margin:0;font-weight:500}
       <div class="stat"><div class="n tn">1,735<small>m²</small></div><div class="l">Main house · four levels</div></div>
       <div class="stat"><div class="n tn">2,000<small>m²</small></div><div class="l">Plot · 30 × 67 m</div></div>
       <div class="stat"><div class="n tn">15<small>+</small></div><div class="l">Cars inside the wall</div></div>
-      <div class="stat"><div class="n tn">4</div><div class="l">Exterior schemes</div></div>
+      <div class="stat"><div class="n tn">24,000<small>L</small></div><div class="l">Water reservoir</div></div>
     </div>
-    <div class="fr wide rv wipe" style="--i:3" data-lb="scheme" data-src="assets/gate.jpg" data-cap="From the access road · recommended scheme" tabindex="0" role="button" aria-label="Open the road view full screen">
+    <div class="story">
+      <div class="rv" style="--i:3">
+        <p class="lede">The villa is conceived as a private luxury retreat, thoughtfully designed to deliver an elevated, resort-style living experience.</p>
+        <p class="body">A bespoke semi-outdoor kitchen with a traditional local oven provides an exceptional setting for outdoor dining and entertaining, complemented by a dedicated poolside BBQ lounge designed for relaxed gatherings and premium leisure. Enhancing the villa’s comfort and independence is a 24,000-litre dedicated water reservoir, supporting the property’s domestic and outdoor requirements.</p>
+        <p class="body">Together, these features create a truly all-in-one luxury living experience—where sophisticated architecture, private recreation, outdoor entertainment and essential infrastructure are seamlessly integrated into one exceptional residence.</p>
+      </div>
+      <ul class="feat rv" style="--i:4">
+        <li><b>Semi-outdoor kitchen</b><span>with a traditional local oven</span></li>
+        <li><b>Poolside BBQ lounge</b><span>for relaxed gatherings</span></li>
+        <li><b>24,000-litre reservoir</b><span>domestic and outdoor water</span></li>
+        <li><b>Cinema · gym · lift</b><span>seven en-suite suites</span></li>
+      </ul>
+    </div>
+    <div class="fr wide rv wipe" style="--i:3" data-lb="scheme" data-src="assets/gate.jpg" data-cap="From the access road" tabindex="0" role="button" aria-label="Open the road view full screen">
       <img src="assets/m/gate.jpg" alt="Villa 71 from the access road: the gatehouse and a garage door in the boundary wall, the villa's rounded volumes rising behind" width="2048" height="2048" loading="lazy" decoding="async">
       <span class="k"><i>01</i>From the road</span>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Guzape · Abuja</span><span class="pn">02 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Guzape · Abuja</span><span class="pn">02 / 09</span></div>
   </div>
 </section>
 
@@ -488,101 +476,58 @@ h3,h4{margin:0;font-weight:500}
 <section class="page" id="p3" data-tone="dark" data-label="The scheme">
   <div class="wrap">
     <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">03</span>Recommended scheme · Option B</p>
+      <div><p class="eyebrow rv"><span class="idx">03</span>The scheme</p>
       <h2 class="title rv" style="--i:1">Travertine, white render, <em>timber.</em></h2></div>
-      <p class="lede rv" style="--i:2">Of the four schemes, Option B is the one we recommend: warm stone against white render, timber slats over the terraces. These are its latest visualisations.</p>
+      <p class="lede rv" style="--i:2">Warm travertine against white render, timber slats over the terraces: the latest visualisations of the house.</p>
     </div>
     <div class="trip">
-      <div class="fr rv wipe" style="--i:1" data-lb="scheme" data-src="assets/rec-a.jpg" data-cap="The approach · Option B" tabindex="0" role="button" aria-label="Open the approach view full screen"><img src="assets/m/rec-a.jpg" alt="The villa from the driveway, cars under the porte-cochère, travertine tower and timber slats above" width="1643" height="2200" loading="lazy" decoding="async"><span class="k"><i>02</i>The approach</span><span class="rec">Recommended</span></div>
-      <div class="fr rv wipe" style="--i:2" data-lb="scheme" data-src="assets/rec-b.jpg" data-cap="The corner · Option B" tabindex="0" role="button" aria-label="Open the corner view full screen"><img src="assets/m/rec-b.jpg" alt="The rounded corner of the villa from the drive, a figure walking towards the entrance" width="1643" height="2200" loading="lazy" decoding="async"><span class="k"><i>03</i>The corner</span></div>
-      <div class="fr rv wipe" style="--i:3" data-lb="scheme" data-src="assets/rec-c.jpg" data-cap="The forecourt · Option B" tabindex="0" role="button" aria-label="Open the forecourt view full screen"><img src="assets/m/rec-c.jpg" alt="The forecourt with the palm and the travertine tower, cars parked under the house" width="1643" height="2200" loading="lazy" decoding="async"><span class="k"><i>04</i>The forecourt</span></div>
+      <div class="fr rv wipe" style="--i:1" data-lb="scheme" data-src="assets/rec-a.jpg" data-cap="The approach" tabindex="0" role="button" aria-label="Open the approach view full screen"><img src="assets/m/rec-a.jpg" alt="The villa from the driveway, cars under the porte-cochère, travertine tower and timber slats above" width="1643" height="2200" loading="lazy" decoding="async"><span class="k"><i>02</i>The approach</span></div>
+      <div class="fr rv wipe" style="--i:2" data-lb="scheme" data-src="assets/rec-b.jpg" data-cap="The corner" tabindex="0" role="button" aria-label="Open the corner view full screen"><img src="assets/m/rec-b.jpg" alt="The rounded corner of the villa from the drive, a figure walking towards the entrance" width="1643" height="2200" loading="lazy" decoding="async"><span class="k"><i>03</i>The corner</span></div>
+      <div class="fr rv wipe" style="--i:3" data-lb="scheme" data-src="assets/rec-c.jpg" data-cap="The forecourt" tabindex="0" role="button" aria-label="Open the forecourt view full screen"><img src="assets/m/rec-c.jpg" alt="The forecourt with the palm and the travertine tower, cars parked under the house" width="1643" height="2200" loading="lazy" decoding="async"><span class="k"><i>04</i>The forecourt</span></div>
     </div>
     <div class="duo">
-      <div class="fr a rv wipe" style="--i:1" data-lb="scheme" data-src="assets/front-cloud.jpg" data-cap="Under a Guzape sky · Option B" tabindex="0" role="button" aria-label="Open the front view full screen"><img src="assets/m/front-cloud.jpg" alt="The front of the villa under a cloudy sky, timber slats shading the roof terrace, a car on the forecourt" width="1792" height="2400" loading="lazy" decoding="async"><span class="k"><i>05</i>The front</span></div>
+      <div class="fr a rv wipe" style="--i:1" data-lb="scheme" data-src="assets/front-cloud.jpg" data-cap="Under a Guzape sky" tabindex="0" role="button" aria-label="Open the front view full screen"><img src="assets/m/front-cloud.jpg" alt="The front of the villa under a cloudy sky, timber slats shading the roof terrace, a car on the forecourt" width="1792" height="2400" loading="lazy" decoding="async"><span class="k"><i>05</i>The front</span></div>
       <div class="col">
         <div class="mats rv" style="--i:2">
           <div class="mat"><div class="sw trav"></div><b>Honed travertine</b><span>Feature walls</span></div>
           <div class="mat"><div class="sw render"></div><b>Warm white render</b><span>Volumes</span></div>
           <div class="mat"><div class="sw timber"></div><b>Timber slats</b><span>Pergola · soffits</span></div>
         </div>
-        <div class="fr rv wipe" style="--i:3" data-lb="scheme" data-src="assets/chalet.jpg" data-cap="The guest chalet · Option B" tabindex="0" role="button" aria-label="Open the guest chalet view full screen"><img src="assets/m/chalet.jpg" alt="The single-storey guest chalet in travertine and white render beside the drive, two cars parked in front" width="2048" height="2048" loading="lazy" decoding="async"><span class="k"><i>06</i>Guest chalet</span></div>
+        <div class="fr rv wipe" style="--i:3" data-lb="scheme" data-src="assets/chalet.jpg" data-cap="The guest chalet" tabindex="0" role="button" aria-label="Open the guest chalet view full screen"><img src="assets/m/chalet.jpg" alt="The single-storey guest chalet in travertine and white render beside the drive, two cars parked in front" width="2048" height="2048" loading="lazy" decoding="async"><span class="k"><i>06</i>Guest chalet</span></div>
       </div>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Recommended scheme</span><span class="pn">03 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · The scheme</span><span class="pn">03 / 09</span></div>
   </div>
 </section>
 
-<!-- 04 · four options -->
-<section class="page" id="p4" data-tone="light" data-label="Four schemes">
+<!-- 04 · grounds -->
+<section class="page" id="p4" data-tone="dark" data-label="Grounds">
   <div class="wrap">
     <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">04</span>Four exterior schemes</p>
-      <h2 class="title rv" style="--i:1">Same house, <em>four skins.</em></h2></div>
-      <p class="lede rv" style="--i:2">Choose a scheme, then drag the line to hold it against the recommended Option B.</p>
-    </div>
-    <div class="cmp">
-      <div class="stage solo rv" id="stage" style="--i:1" aria-label="Comparison of the exterior schemes">
-        <img data-o="a" src="assets/m/opt-a-side.jpg" alt="Option A: white render with grey rubble stone and dark timber" width="1800" height="1969" loading="lazy" decoding="async">
-        <img data-o="b" class="on" src="assets/m/opt-b-side.jpg" alt="Option B: warm white render with beige rubble stone and timber" width="1800" height="1969">
-        <img data-o="c" src="assets/m/opt-c-side.jpg" alt="Option C: white render with cream flagstone and dark timber" width="1800" height="1969" loading="lazy" decoding="async">
-        <img data-o="d" src="assets/m/opt-d-side.jpg" alt="Option D: beige render with warm flagstone and timber" width="1804" height="1974" loading="lazy" decoding="async">
-        <div class="recl" id="recl"><img src="assets/m/opt-b-side.jpg" alt="" width="1800" height="1969" loading="lazy" decoding="async"></div>
-        <div class="handle" id="handle"><b></b></div>
-        <span class="lab l">B · Recommended</span><span class="lab r" id="labr">B · Beige</span>
-        <span class="hint">Drag to compare</span>
-      </div>
-      <div class="rv" style="--i:2">
-        <div class="opts" role="tablist" aria-label="Exterior schemes">
-          <button class="opt" data-o="a" role="tab" aria-selected="false"><span class="sw" style="background:linear-gradient(135deg,#f4f4f2 50%,#8b8a86 50%)"></span><span class="a">A</span><span class="t">White</span></button>
-          <button class="opt rec on" data-o="b" role="tab" aria-selected="true"><span class="sw" style="background:linear-gradient(135deg,#f1ede4 50%,#b39a72 50%)"></span><span class="a">B</span><span class="t">Beige</span></button>
-          <button class="opt" data-o="c" role="tab" aria-selected="false"><span class="sw" style="background:linear-gradient(135deg,#f5f5f3 50%,#d8d0bd 50%)"></span><span class="a">C</span><span class="t">White</span></button>
-          <button class="opt" data-o="d" role="tab" aria-selected="false"><span class="sw" style="background:linear-gradient(135deg,#ece5d6 50%,#c3ab84 50%)"></span><span class="a">D</span><span class="t">Beige</span></button>
-        </div>
-        <p class="odesc" id="odesc"><b>Option B · <em>Beige</em></b><span>Warm white render · beige rubble stone · timber slats. Recommended.</span></p>
-        <div class="aux">
-          <div class="fr sm gate" id="auxgate" data-lb="options" data-src="assets/opt-b-gate.jpg" data-cap="From the road · Option B" tabindex="0" role="button" aria-label="Open the road view of this scheme full screen"><img id="auxgateimg" src="assets/m/opt-b-gate.jpg" alt="The gatehouse and boundary wall in this scheme" width="1800" height="1969" loading="lazy" decoding="async"><span class="k">From the road</span></div>
-          <div class="fr sm" id="auxfront" data-lb="options" data-src="assets/opt-b-front.jpg" data-cap="The front · Option B" tabindex="0" role="button" aria-label="Open the front view of this scheme full screen"><img id="auxfrontimg" src="assets/m/opt-b-front.jpg" alt="The front of the villa in this scheme" width="1800" height="1837" loading="lazy" decoding="async"><span class="k">The front</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Four schemes</span><span class="pn">04 / 10</span></div>
-  </div>
-</section>
-
-<!-- 05 · grounds -->
-<section class="page" id="p5" data-tone="dark" data-label="Grounds">
-  <div class="wrap">
-    <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">05</span>Grounds</p>
+      <div><p class="eyebrow rv"><span class="idx">04</span>Grounds</p>
       <h2 class="title rv" style="--i:1">Pool, terraces, <em>courtyards.</em></h2></div>
-      <p class="lede rv" style="--i:2">The pool and gazebo sit at the rear of the plot; the drive, forecourt and guest chalet at the road.</p>
+      <p class="lede rv" style="--i:2">The pool, gazebo and outdoor kitchen sit at the rear of the plot; the drive, forecourt and guest chalet at the road.</p>
     </div>
     <div class="gg">
-      <div class="fr s5 rv wipe" style="--ar:1650/1762;--i:1" data-lb="grounds" data-src="assets/pool-1.jpg" data-cap="The pool from the deck" tabindex="0" role="button" aria-label="Open the pool view full screen"><img src="assets/m/pool-1.jpg" alt="The pool from the deck, loungers under the terrace, the curved roof overhead" width="1650" height="1762" loading="lazy" decoding="async"><span class="k">The pool</span></div>
-      <div class="fr s4 rv wipe" style="--ar:1650/2000;--i:2" data-lb="grounds" data-src="assets/pool-2.jpg" data-cap="Pool deck and dining" tabindex="0" role="button" aria-label="Open the pool deck view full screen"><img src="assets/m/pool-2.jpg" alt="Outdoor dining on the timber pool deck, sail shades above" width="1650" height="2000" loading="lazy" decoding="async"><span class="k">Pool deck</span></div>
-      <div class="fr s3 rv wipe" style="--ar:1650/2000;--i:3" data-lb="grounds" data-src="assets/pool-3.jpg" data-cap="The pool court from above" tabindex="0" role="button" aria-label="Open the pool court view full screen"><img src="assets/m/pool-3.jpg" alt="The pool court from above, parasols and a lounge beside the water" width="1650" height="2000" loading="lazy" decoding="async"><span class="k">From above</span></div>
-      <div class="fr s4 rv wipe" style="--ar:1400/1800;--i:1" data-lb="grounds" data-src="assets/i/pool-house.jpg" data-cap="The pool and the house" tabindex="0" role="button" aria-label="Open the pool and house view full screen"><img src="assets/t/pool-house.jpg" alt="The pool with the villa's rear elevation behind it, a parasol and loungers on the deck" width="1400" height="1800" loading="lazy" decoding="async"><span class="k">Pool and house</span></div>
-      <div class="fr s4 rv wipe" style="--ar:1530/1800;--i:2" data-lb="grounds" data-src="assets/i/terrace-1.jpg" data-cap="Expanse terrace · second floor" tabindex="0" role="button" aria-label="Open the terrace view full screen"><img src="assets/t/terrace-1.jpg" alt="The second-floor terrace with a fire pit, parasol and lounge seating under the timber pergola" width="1530" height="1800" loading="lazy" decoding="async"><span class="k">Expanse terrace</span></div>
-      <div class="fr s4 rv wipe" style="--ar:1530/1800;--i:3" data-lb="grounds" data-src="assets/i/terrace-2.jpg" data-cap="Expanse terrace · dining" tabindex="0" role="button" aria-label="Open the terrace dining view full screen"><img src="assets/t/terrace-2.jpg" alt="Dining on the terrace, palms and the rounded parapet edge" width="1530" height="1800" loading="lazy" decoding="async"><span class="k">Terrace dining</span></div>
-      <div class="fr s3 rv wipe" style="--ar:1650/2000;--i:1" data-lb="grounds" data-src="assets/passage.jpg" data-cap="The side passage" tabindex="0" role="button" aria-label="Open the side passage view full screen"><img src="assets/m/passage.jpg" alt="The paved side passage between the villa and the stone-piered boundary wall" width="1650" height="2000" loading="lazy" decoding="async"><span class="k">Side passage</span></div>
-      <div class="fr s5 rv wipe" style="--ar:1800/1897;--i:2" data-lb="grounds" data-src="assets/chalet-b.jpg" data-cap="Guest chalet · earlier study" tabindex="0" role="button" aria-label="Open the guest chalet study full screen"><img src="assets/m/chalet-b.jpg" alt="Earlier study of the guest chalet with a rubble-stone front, palms behind" width="1800" height="1897" loading="lazy" decoding="async"><span class="k">Guest chalet</span></div>
-      <div class="fr s4 rv wipe" style="--ar:1650/1922;--i:3" data-lb="grounds" data-src="assets/aerial-1.jpg" data-cap="Aerial · the forecourt and chalet" tabindex="0" role="button" aria-label="Open the aerial view full screen"><img src="assets/m/aerial-1.jpg" alt="Aerial view over the gate, forecourt parking and guest chalet towards the villa" width="1650" height="1922" loading="lazy" decoding="async"><span class="k">Aerial · forecourt</span></div>
-      <div class="fr s6 rv wipe" style="--ar:1566/1400;--i:1" data-lb="grounds" data-src="assets/aerial-2.jpg" data-cap="Aerial · the pool court" tabindex="0" role="button" aria-label="Open the rear aerial view full screen"><img src="assets/m/aerial-2.jpg" alt="Aerial view over the villa's roof terraces towards the pool court at the rear" width="1566" height="1658" loading="lazy" decoding="async"><span class="k">Aerial · pool court</span></div>
-      <div class="fr s6 rv wipe" style="--ar:1800/1400;--i:2" data-lb="grounds" data-src="assets/chalet-a.jpg" data-cap="Guest chalet at dusk · earlier study" tabindex="0" role="button" aria-label="Open the dusk chalet study full screen"><img src="assets/m/chalet-a.jpg" alt="Earlier study of the guest chalet at dusk, wall lights on the stone front" width="1800" height="1969" loading="lazy" decoding="async"><span class="k">Chalet at dusk</span></div>
+      <div class="fr s4 rv wipe" style="--ar:1400/1800;--i:1" data-lb="grounds" data-src="assets/i/pool-house.jpg" data-cap="The pool and the house" tabindex="0" role="button" aria-label="Open the pool and house view full screen"><img src="assets/t/pool-house.jpg" alt="The pool with the villa's rear elevation behind it, a parasol and loungers on the deck" width="700" height="900" loading="lazy" decoding="async"><span class="k">Pool and house</span></div>
+      <div class="fr s4 rv wipe" style="--ar:1530/1800;--i:2" data-lb="grounds" data-src="assets/i/terrace-1.jpg" data-cap="Expanse terrace · second floor" tabindex="0" role="button" aria-label="Open the terrace view full screen"><img src="assets/t/terrace-1.jpg" alt="The second-floor terrace with a fire pit, parasol and lounge seating under the timber pergola" width="765" height="900" loading="lazy" decoding="async"><span class="k">Expanse terrace</span></div>
+      <div class="fr s4 rv wipe" style="--ar:1530/1800;--i:3" data-lb="grounds" data-src="assets/i/terrace-2.jpg" data-cap="Expanse terrace · dining" tabindex="0" role="button" aria-label="Open the terrace dining view full screen"><img src="assets/t/terrace-2.jpg" alt="Dining on the terrace, palms and the rounded parapet edge" width="765" height="900" loading="lazy" decoding="async"><span class="k">Terrace dining</span></div>
+      <div class="fr s6 rv wipe" style="--ar:1800/1500;--i:1" data-lb="grounds" data-src="assets/chalet-b.jpg" data-cap="Guest chalet · earlier study" tabindex="0" role="button" aria-label="Open the guest chalet study full screen"><img src="assets/m/chalet-b.jpg" alt="Earlier study of the guest chalet with a rubble-stone front, palms behind" width="1328" height="1400" loading="lazy" decoding="async"><span class="k">Guest chalet</span></div>
+      <div class="fr s6 rv wipe" style="--ar:1800/1500;--i:2" data-lb="grounds" data-src="assets/chalet-a.jpg" data-cap="Guest chalet at dusk · earlier study" tabindex="0" role="button" aria-label="Open the dusk chalet study full screen"><img src="assets/m/chalet-a.jpg" alt="Earlier study of the guest chalet at dusk, wall lights on the stone front" width="1280" height="1400" loading="lazy" decoding="async"><span class="k">Chalet at dusk</span></div>
     </div>
     <div class="site">
       <div class="dims rv" style="--i:1"><span><b>67.44 m</b>north</span><span><b>30.23 m</b>road frontage</span><span><b>66.24 m</b>south</span><span><b>30.11 m</b>rear</span><span><b>≈2,000 m²</b>plot</span></div>
-      <div class="fr plain rv wipe" style="--i:2" data-lb="grounds" data-src="assets/site-plan.jpg" data-cap="Site plan · not to scale" data-plan="1" tabindex="0" role="button" aria-label="Open the site plan full screen"><img src="assets/m/site-plan.jpg" alt="Site plan: the main building at the centre of the plot, guest chalet and parking towards the access road on the east, pool and gazebo at the west" width="2480" height="1218" loading="lazy" decoding="async"><span class="k">Site plan · N.T.S</span></div>
+      <div class="fr plain rv wipe" style="--i:2" data-lb="grounds" data-src="assets/site-plan.png" data-cap="Site plan · not to scale" data-plan="1" tabindex="0" role="button" aria-label="Open the site plan full screen"><img src="assets/site-plan.png" alt="Site plan: the villa at the centre of the plot, the guest chalet and parking towards the access road, the pool and gazebo at the far end" width="3103" height="1334" loading="lazy" decoding="async"><span class="k">Site plan · A_71_23 · N.T.S</span></div>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Grounds</span><span class="pn">05 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Grounds</span><span class="pn">04 / 09</span></div>
   </div>
 </section>
 
-<!-- 06 · interiors -->
-<section class="page" id="p6" data-tone="light" data-label="Interiors">
+<!-- 05 · interiors -->
+<section class="page" id="p5" data-tone="light" data-label="Interiors">
   <div class="wrap">
     <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">06</span>Interiors</p>
+      <div><p class="eyebrow rv"><span class="idx">05</span>Interiors</p>
       <h2 class="title rv" style="--i:1">Fifty-one rooms, <em>one palette.</em></h2></div>
       <p class="lede rv" style="--i:2">Travertine floors, oak and bronze, curtains to the floor. Filter by part of the house; tap any room to enlarge.</p>
     </div>
@@ -651,27 +596,24 @@ h3,h4{margin:0;font-weight:500}
       <figure class="tile rv" data-g="chalet" data-lb="interiors" data-src="assets/i/chalet-kitchen-1.jpg" data-cap="Guest chalet · kitchen" tabindex="0" role="button" aria-label="Open Guest chalet · kitchen full screen"><img src="assets/t/chalet-kitchen-1.jpg" alt="Guest chalet · kitchen" width="750" height="900" loading="lazy" decoding="async"><figcaption>Guest chalet · kitchen</figcaption></figure>
       <figure class="tile rv" data-g="chalet" data-lb="interiors" data-src="assets/i/chalet-kitchen-2.jpg" data-cap="Guest chalet · kitchenette" tabindex="0" role="button" aria-label="Open Guest chalet · kitchenette full screen"><img src="assets/t/chalet-kitchen-2.jpg" alt="Guest chalet · kitchenette" width="750" height="900" loading="lazy" decoding="async"><figcaption>Guest chalet · kitchenette</figcaption></figure>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Interiors</span><span class="pn">06 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Interiors</span><span class="pn">05 / 09</span></div>
   </div>
 </section>
 
-<!-- 07 · plans -->
-<section class="page" id="p7" data-tone="dark" data-label="Plans">
+<!-- 06 · plans -->
+<section class="page" id="p6" data-tone="dark" data-label="Plans">
   <div class="wrap">
     <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">07</span>Plans</p>
+      <div><p class="eyebrow rv"><span class="idx">06</span>Plans</p>
       <h2 class="title rv" style="--i:1">Floor by <em>floor.</em></h2></div>
       <p class="lede rv" style="--i:2">A lift and stair core serves four levels, from the basement garage and cinema to the second floor. Areas are as scheduled by the architects; drawing set A_71_23, June 2026.</p>
     </div>
-    <div class="ptabs rv" style="--i:2" role="tablist" aria-label="Drawings">
+    <div class="ptabs rv" style="--i:2" role="tablist" aria-label="Floors">
       <button class="pill" data-p="basement" role="tab" aria-selected="false">Basement<span class="c">−2.85</span></button>
       <button class="pill on" data-p="ground" role="tab" aria-selected="true">Ground<span class="c">648 m²</span></button>
       <button class="pill" data-p="first" role="tab" aria-selected="false">First<span class="c">462 m²</span></button>
       <button class="pill" data-p="second" role="tab" aria-selected="false">Second<span class="c">484 m²</span></button>
       <button class="pill" data-p="guest" role="tab" aria-selected="false">Guest chalet &amp; staff</button>
-      <button class="pill" data-p="eleva" role="tab" aria-selected="false">Elevation A</button>
-      <button class="pill" data-p="elevb" role="tab" aria-selected="false">Elevation B</button>
-      <button class="pill" data-p="section" role="tab" aria-selected="false">Section</button>
     </div>
     <div class="pv rv" style="--i:3">
       <div class="planbox" id="planbox" data-lb="plans" data-src="assets/plan-ground.png" data-cap="Ground floor plan" data-plan="1" tabindex="0" role="button" aria-label="Enlarge the drawing">
@@ -744,49 +686,17 @@ h3,h4{margin:0;font-weight:500}
             <li><span>Laundry</span><span class="tn">9 m²</span></li>
           </ul>
         </div>
-        <div class="pp" data-p="eleva" hidden>
-          <p class="floornote">The entrance front: the <em>travertine tower</em>, the porte-cochère and the stacked balconies under the roof.</p>
-          <ul class="rooms">
-            <li><span>Parapet</span><span class="tn">+11.85</span></li>
-            <li><span>Roof</span><span class="tn">+10.80</span></li>
-            <li><span>Second floor</span><span class="tn">+7.20</span></li>
-            <li><span>First floor</span><span class="tn">+3.60</span></li>
-            <li><span>Ground floor</span><span class="tn">0.00</span></li>
-            <li><span>Ground level · pool court · basement</span><span class="tn">−0.45 · −1.70 · −2.85</span></li>
-          </ul>
-        </div>
-        <div class="pp" data-p="elevb" hidden>
-          <p class="floornote">The garden side: three floors of terraces stepping down the <em>hill</em> to the pool court.</p>
-          <ul class="rooms">
-            <li><span>Parapet</span><span class="tn">+11.85</span></li>
-            <li><span>Roof</span><span class="tn">+10.80</span></li>
-            <li><span>Second floor</span><span class="tn">+7.20</span></li>
-            <li><span>First floor</span><span class="tn">+3.60</span></li>
-            <li><span>Ground floor</span><span class="tn">0.00</span></li>
-            <li><span>Ground level · pool court · basement</span><span class="tn">−0.45 · −1.70 · −2.85</span></li>
-          </ul>
-        </div>
-        <div class="pp" data-p="section" hidden>
-          <p class="floornote">Section A-A through the core: the house <em>steps down the slope</em>, with the basement below the entrance side and the pool court 1.7 m below the garden floor.</p>
-          <ul class="rooms">
-            <li><span>Floor to floor</span><span class="tn">3.60 m</span></li>
-            <li><span>Roof above the second floor</span><span class="tn">3.60 m</span></li>
-            <li><span>Parapet above the roof</span><span class="tn">1.05 m</span></li>
-            <li><span>Basement below the ground floor</span><span class="tn">2.85 m</span></li>
-            <li><span>Pool court below the ground floor</span><span class="tn">1.70 m</span></li>
-          </ul>
-        </div>
       </div>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Plans</span><span class="pn">07 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Plans</span><span class="pn">06 / 09</span></div>
   </div>
 </section>
 
-<!-- 08 · climate & ground -->
-<section class="page" id="p8" data-tone="light" data-label="Climate &amp; ground">
+<!-- 07 · climate & ground -->
+<section class="page" id="p7" data-tone="light" data-label="Climate &amp; ground">
   <div class="wrap">
     <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">08</span>Climate and ground</p>
+      <div><p class="eyebrow rv"><span class="idx">07</span>Climate and ground</p>
       <h2 class="title rv" style="--i:1">Sun, shade <em>and the hillside.</em></h2></div>
       <p class="lede rv" style="--i:2">Guzape sits at nine degrees north on the granite hills south of Abuja's centre: a high sun all year, harmattan haze from December, rains from April to October. Drag the time of day to see how far the sun reaches under the slabs of the approach balcony.</p>
     </div>
@@ -822,15 +732,15 @@ h3,h4{margin:0;font-weight:500}
       <div class="rv" style="--i:3"><div class="n">Apr – Oct</div><div class="l">The rains</div><p>About 1,400 mm a year in convective storms, heaviest in August and September; deep slabs keep the terraces usable.</p></div>
       <div class="rv" style="--i:4"><div class="n">Granite</div><div class="l">Ground</div><p>Guzape's hills are rock under shallow soil. The site falls about 1.3 m from the drive to the pool court, and the basement is cut 2.85 m into it.</p></div>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Climate and ground</span><span class="pn">08 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Climate and ground</span><span class="pn">07 / 09</span></div>
   </div>
 </section>
 
-<!-- 09 · specification -->
-<section class="page" id="p9" data-tone="light" data-label="Specification">
+<!-- 08 · specification -->
+<section class="page" id="p8" data-tone="light" data-label="Specification">
   <div class="wrap">
     <div class="head">
-      <div><p class="eyebrow rv"><span class="idx">09</span>Specification</p>
+      <div><p class="eyebrow rv"><span class="idx">08</span>Specification</p>
       <h2 class="title rv" style="--i:1">Built <em>to last.</em></h2></div>
     </div>
     <div class="spec">
@@ -844,12 +754,13 @@ h3,h4{margin:0;font-weight:500}
         <li>Aluminium casement windows, tinted double glazing, fly screens</li>
         <li>Class A security doors with viewholes; built-in burglar proofing</li>
         <li>Glass balustrades to balconies</li>
+        <li>Semi-outdoor kitchen with a traditional local oven; poolside BBQ lounge</li>
         <li>Stamped-concrete compound; gatehouse with office</li>
       </ul></div>
       <div class="rv" style="--i:3"><h4>Services</h4><ul>
         <li>CCTV to the perimeter; intercom from the gatehouse to every living room</li>
         <li>Fire hydrant, fire alarm and smoke detectors throughout</li>
-        <li>Air-conditioning piping to all rooms; PPR plumbing; water storage</li>
+        <li>Air-conditioning piping to all rooms; PPR plumbing; 24,000-litre water reservoir</li>
         <li>Solar and generator provision; data and TV wiring; passenger lift</li>
       </ul></div>
     </div>
@@ -859,22 +770,22 @@ h3,h4{margin:0;font-weight:500}
       <div class="fr sm rv wipe" style="--i:3" data-lb="spec" data-src="assets/i/master-closet-1.jpg" data-cap="Master suite · dressing room" tabindex="0" role="button" aria-label="Open the dressing room full screen"><img src="assets/t/master-closet-1.jpg" alt="Walk-in dressing room with glazed wardrobes" width="765" height="900" loading="lazy" decoding="async"></div>
       <div class="fr sm rv wipe" style="--i:4" data-lb="spec" data-src="assets/i/stairhall.jpg" data-cap="Stair hall and lift" tabindex="0" role="button" aria-label="Open the stair hall full screen"><img src="assets/t/stairhall.jpg" alt="The stair hall with the lift core" width="720" height="900" loading="lazy" decoding="async"></div>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Specification</span><span class="pn">09 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Specification</span><span class="pn">08 / 09</span></div>
   </div>
 </section>
 
 <!-- 09 · contact -->
-<section class="page close" id="p10" data-tone="dark" data-label="Contact">
+<section class="page close" id="p9" data-tone="dark" data-label="Contact">
   <div class="wrap">
-    <p class="eyebrow rv"><span class="idx">10</span>Contact</p>
+    <p class="eyebrow rv"><span class="idx">09</span>Contact</p>
     <h2 class="big rv" style="--i:1">See the house <em>in Guzape.</em></h2>
     <div class="close-grid">
       <div>
         <p class="lede rv" style="--i:2">Drawings, the full specification and a site visit can be arranged through A365 Designs.</p>
       </div>
-      <div class="fr rv wipe" style="--i:2" data-lb="close" data-src="assets/rec-b.jpg" data-cap="The corner · Option B" tabindex="0" role="button" aria-label="Open the corner view full screen">
+      <div class="fr rv wipe" style="--i:2" data-lb="close" data-src="assets/rec-b.jpg" data-cap="The corner" tabindex="0" role="button" aria-label="Open the corner view full screen">
         <img src="assets/m/rec-b.jpg" alt="The rounded corner of the villa in the recommended scheme" width="1643" height="2200" loading="lazy" decoding="async">
-        <span class="k">Option B</span>
+        <span class="k">The corner</span>
       </div>
     </div>
     <div class="cols">
@@ -882,13 +793,12 @@ h3,h4{margin:0;font-weight:500}
         <h4>In this brochure</h4>
         <ol class="toc">
           <li><a href="#p2"><span class="num">02</span><span>At a glance</span></a></li>
-          <li><a href="#p3"><span class="num">03</span><span>The recommended scheme</span></a></li>
-          <li><a href="#p4"><span class="num">04</span><span>Four exterior schemes</span></a></li>
-          <li><a href="#p5"><span class="num">05</span><span>Grounds and site plan</span></a></li>
-          <li><a href="#p6"><span class="num">06</span><span>Interiors · 360° tour</span></a></li>
-          <li><a href="#p7"><span class="num">07</span><span>Plans</span></a></li>
-          <li><a href="#p8"><span class="num">08</span><span>Climate and ground · sun study</span></a></li>
-          <li><a href="#p9"><span class="num">09</span><span>Specification</span></a></li>
+          <li><a href="#p3"><span class="num">03</span><span>The scheme</span></a></li>
+          <li><a href="#p4"><span class="num">04</span><span>Grounds and site plan</span></a></li>
+          <li><a href="#p5"><span class="num">05</span><span>Interiors · 360° tour</span></a></li>
+          <li><a href="#p6"><span class="num">06</span><span>Plans</span></a></li>
+          <li><a href="#p7"><span class="num">07</span><span>Climate and ground · sun study</span></a></li>
+          <li><a href="#p8"><span class="num">08</span><span>Specification</span></a></li>
         </ol>
       </div>
       <div class="rv" style="--i:4">
@@ -901,6 +811,7 @@ h3,h4{margin:0;font-weight:500}
         <p class="who"><b>A365 Designs</b>Suite 4, Plot 892 Victor A. Morris<br>FCT Abuja</p>
         <div class="contact" style="margin-top:12px">
           <a href="tel:+2348169583159" aria-label="Call A365 Designs on +234 816 958 3159"><span class="v">+234 816 958 3159</span><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3.5l1.5 4-2 1.5a11 11 0 0 0 6.5 6.5L16 14l4 1.5V19a1.5 1.5 0 0 1-1.6 1.5A15.5 15.5 0 0 1 3.5 5.6 1.5 1.5 0 0 1 5 4z"/></svg>Call A365</span></a>
+          <a href="https://www.instagram.com/a365_" target="_blank" rel="noopener" aria-label="A365 Designs on Instagram, @a365_"><span class="v">@a365_</span><span class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17" cy="7" r=".6" fill="currentColor"/></svg>Instagram</span></a>
         </div>
       </div>
     </div>
@@ -912,7 +823,7 @@ h3,h4{margin:0;font-weight:500}
       <a href="mailto:mizanqistltd@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>mizanqistltd@gmail.com</a>
       <a href="https://www.instagram.com/mizanqistltd?stkn=MTNvcmwzc2F5MjVvMQ%3D%3D&amp;utm_source=qr" target="_blank" rel="noopener" aria-label="Mizan Qist on Instagram, @mizanqistltd"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17" cy="7" r=".6" fill="currentColor"/></svg>@mizanqistltd</a>
     </div>
-    <div class="pfoot"><span><b>Villa 71</b> · Guzape · Abuja · 2026</span><span class="pn">10 / 10</span></div>
+    <div class="pfoot"><span><b>Villa 71</b> · Guzape · Abuja · 2026</span><span class="pn">09 / 09</span></div>
   </div>
 </section>
 
@@ -925,14 +836,13 @@ h3,h4{margin:0;font-weight:500}
     <ol>
       <li style="--i:0"><a href="#p1" data-img="assets/t/lobby.jpg"><span class="num">01</span><span><span class="t">Cover</span><span class="s">Guzape · Abuja</span></span></a></li>
       <li style="--i:1"><a href="#p2" data-img="assets/m/gate.jpg"><span class="num">02</span><span><span class="t">At a glance</span><span class="s">Seven suites · 2,000 m² plot</span></span></a></li>
-      <li style="--i:2"><a href="#p3" data-img="assets/m/rec-a.jpg"><span class="num">03</span><span><span class="t">The scheme</span><span class="s">Recommended · Option B</span></span></a></li>
-      <li style="--i:3"><a href="#p4" data-img="assets/m/opt-a-side.jpg"><span class="num">04</span><span><span class="t">Four schemes</span><span class="s">A · B · C · D · compare</span></span></a></li>
-      <li style="--i:4"><a href="#p5" data-img="assets/m/pool-1.jpg"><span class="num">05</span><span><span class="t">Grounds</span><span class="s">Pool · terraces · site plan</span></span></a></li>
-      <li style="--i:5"><a href="#p6" data-img="assets/t/living-2.jpg"><span class="num">06</span><span><span class="t">Interiors</span><span class="s">51 rooms · 360° tour</span></span></a></li>
-      <li style="--i:6"><a href="#p7" data-img="assets/t/master-lounge-1.jpg"><span class="num">07</span><span><span class="t">Plans</span><span class="s">Four floors</span></span></a></li>
-      <li style="--i:7"><a href="#p8" data-img="assets/t/terrace-1.jpg"><span class="num">08</span><span><span class="t">Climate and ground</span><span class="s">Sun on the balconies · the hillside</span></span></a></li>
-      <li style="--i:8"><a href="#p9" data-img="assets/t/master-bath.jpg"><span class="num">09</span><span><span class="t">Specification</span><span class="s">Finishes · envelope · services</span></span></a></li>
-      <li style="--i:9"><a href="#p10" data-img="assets/m/rec-b.jpg"><span class="num">10</span><span><span class="t">Contact</span><span class="s">A365 Designs</span></span></a></li>
+      <li style="--i:2"><a href="#p3" data-img="assets/m/rec-a.jpg"><span class="num">03</span><span><span class="t">The scheme</span><span class="s">Travertine · white render · timber</span></span></a></li>
+      <li style="--i:3"><a href="#p4" data-img="assets/t/pool-house.jpg"><span class="num">04</span><span><span class="t">Grounds</span><span class="s">Pool · terraces · site plan</span></span></a></li>
+      <li style="--i:4"><a href="#p5" data-img="assets/t/living-2.jpg"><span class="num">05</span><span><span class="t">Interiors</span><span class="s">51 rooms · 360° tour</span></span></a></li>
+      <li style="--i:5"><a href="#p6" data-img="assets/t/master-lounge-1.jpg"><span class="num">06</span><span><span class="t">Plans</span><span class="s">Four floors</span></span></a></li>
+      <li style="--i:6"><a href="#p7" data-img="assets/t/terrace-1.jpg"><span class="num">07</span><span><span class="t">Climate and ground</span><span class="s">Sun on the balconies · the hillside</span></span></a></li>
+      <li style="--i:7"><a href="#p8" data-img="assets/t/master-bath.jpg"><span class="num">08</span><span><span class="t">Specification</span><span class="s">Finishes · envelope · services</span></span></a></li>
+      <li style="--i:8"><a href="#p9" data-img="assets/m/rec-b.jpg"><span class="num">09</span><span><span class="t">Contact</span><span class="s">A365 Designs</span></span></a></li>
     </ol>
     <div class="mimg" id="mimg" aria-hidden="true"><img src="assets/m/rec-a.jpg" alt="" class="on"></div>
   </div>
@@ -1254,36 +1164,6 @@ h3,h4{margin:0;font-weight:500}
     update();
   })();
 
-  /* ——— four schemes: switch + compare slider ——— */
-  var OPTS={
-    a:{name:'Option A',tone:'White',desc:'White render · grey rubble stone · dark timber.',gate:'opt-a-gate',front:null},
-    b:{name:'Option B',tone:'Beige',desc:'Warm white render · beige rubble stone · timber slats. Recommended.',gate:'opt-b-gate',front:'opt-b-front'},
-    c:{name:'Option C',tone:'White',desc:'White render · cream flagstone · dark timber.',gate:null,front:'opt-c-front'},
-    d:{name:'Option D',tone:'Beige',desc:'Beige render · warm flagstone · timber slats.',gate:null,front:null}
-  };
-  var stage=$('#stage'), recl=$('#recl'), handle=$('#handle'), labr=$('#labr'), odesc=$('#odesc'), auxgate=$('#auxgate'), auxfront=$('#auxfront'), pos=50, curO='b';
-  function setPos(p){ pos=Math.max(4,Math.min(96,p)); recl.style.clipPath='inset(0 '+(100-pos)+'% 0 0)'; handle.style.left=pos+'%'; }
-  function pick(o){
-    curO=o; var op=OPTS[o];
-    $$('.stage > img',stage).forEach(function(im){ im.classList.toggle('on', im.getAttribute('data-o')===o); });
-    $$('.opt').forEach(function(b){ var on=b.getAttribute('data-o')===o; b.classList.toggle('on',on); b.setAttribute('aria-selected',on?'true':'false'); });
-    stage.classList.toggle('solo', o==='b'); labr.textContent=o.toUpperCase()+' · '+op.tone;
-    odesc.innerHTML='<b>'+op.name+' · <em>'+op.tone+'</em></b><span>'+op.desc+'</span>';
-    if(op.gate){ auxgate.hidden=false; $('#auxgateimg').src='assets/m/'+op.gate+'.jpg'; auxgate.setAttribute('data-src','assets/'+op.gate+'.jpg'); auxgate.setAttribute('data-cap','From the road · '+op.name); } else auxgate.hidden=true;
-    if(op.front){ auxfront.hidden=false; $('#auxfrontimg').src='assets/m/'+op.front+'.jpg'; auxfront.setAttribute('data-src','assets/'+op.front+'.jpg'); auxfront.setAttribute('data-cap','The front · '+op.name); } else auxfront.hidden=true;
-    if(o!=='b') setPos(50);
-  }
-  $$('.opt').forEach(function(b){ b.addEventListener('click',function(){ pick(b.getAttribute('data-o')); }); });
-  (function(){ var drag=false;
-    function px(e){ var r=stage.getBoundingClientRect(); return (e.clientX-r.left)/r.width*100; }
-    stage.addEventListener('pointerdown',function(e){ if(curO==='b') return; drag=true; stage.classList.add('moved'); stage.setPointerCapture(e.pointerId); setPos(px(e)); });
-    stage.addEventListener('pointermove',function(e){ if(drag) setPos(px(e)); });
-    stage.addEventListener('pointerup',function(){ drag=false; }); stage.addEventListener('pointercancel',function(){ drag=false; });
-    stage.addEventListener('keydown',function(e){ if(curO==='b') return; if(e.key==='ArrowLeft'){ setPos(pos-4); e.preventDefault(); } if(e.key==='ArrowRight'){ setPos(pos+4); e.preventDefault(); } });
-    stage.setAttribute('tabindex','0');
-  })();
-  setPos(50);
-
   /* ——— interiors filter ——— */
   $$('.filters .pill').forEach(function(p){ p.addEventListener('click',function(){
     var f=p.getAttribute('data-f'); $$('.filters .pill').forEach(function(q){ q.classList.toggle('on',q===p); });
@@ -1291,7 +1171,7 @@ h3,h4{margin:0;font-weight:500}
   }); });
 
   /* ——— plans ——— */
-  var PLAN={basement:['assets/plan-basement.png','Basement · N.T.S',1804,2279,'plan'], ground:['assets/plan-ground.png','Ground floor · N.T.S',3394,2679,'plan'], first:['assets/plan-first.png','First floor · N.T.S',3578,2755,'plan'], second:['assets/plan-second.png','Second floor · N.T.S',3578,2776,'plan'], guest:['assets/plan-guest.png','Guest chalet and staff · N.T.S',890,1046,'plan'], eleva:['assets/elev-a.jpg','Elevation A · N.T.S',2875,1468,'img'], elevb:['assets/elev-b.jpg','Elevation B · N.T.S',3549,1591,'img'], section:['assets/section.jpg','Section A-A · N.T.S',3509,1730,'img']};
+  var PLAN={basement:['assets/plan-basement.png','Basement · N.T.S',1804,2279,'plan'], ground:['assets/plan-ground.png','Ground floor · N.T.S',3394,2679,'plan'], first:['assets/plan-first.png','First floor · N.T.S',3578,2755,'plan'], second:['assets/plan-second.png','Second floor · N.T.S',3578,2776,'plan'], guest:['assets/plan-guest.png','Guest chalet and staff · N.T.S',890,1046,'plan']};
   var planimg=$('#planimg'), planbox=$('#planbox'), plank=$('#plank');
   $$('.ptabs .pill').forEach(function(p){ p.addEventListener('click',function(){
     var k=p.getAttribute('data-p'), v=PLAN[k];
