@@ -1,6 +1,6 @@
 # Villa 71
 
-Web brochure for Villa 71 — a private residence of seven en-suite suites with a guest chalet, staff quarters, pool, cinema and gym in Guzape, Abuja, designed by Designetic & A365 Designs. Compiled by Mizan Qist Limited.
+Web brochure for Villa 71 — a private residence of seven en-suite suites with a guest chalet, staff quarters, pool, cinema and gym in Guzape, Abuja, designed by A365 Designs. Compiled by Mizan Qist Limited.
 
 Nine pages, one file: `index.html` carries the markup, styles and interactions; `assets/` holds the visualisations (exteriors at the top level at full size for the lightbox, with the 1400 px copies the page itself shows in `assets/m/`; interiors in `assets/i/` with `assets/t/` thumbnails), the four floor plans and the site plan. Fonts load from Google Fonts (Cormorant, Manrope).
 
