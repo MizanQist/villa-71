@@ -1,4 +1,4 @@
-# Builds villa-71-brochure.pdf: sixteen A4-landscape sheets from the site's markup, tokens and images (no 360° tour).
+# Builds villa-71-brochure.pdf: A4-landscape sheets, one subject to a page, from the site's markup, tokens and images (no 360° tour).
 # Usage: python3 tools/make_pdf.py   (Python 3 with Pillow and Playwright + Chromium)
 import os, re, io, asyncio, html
 from PIL import Image
@@ -16,18 +16,21 @@ def flat(src,name,ink,bg,long=2200):
     a=im.split()[3]; out=Image.new("RGB",im.size,bg); out.paste(Image.new("RGB",im.size,ink),(0,0),a); out.save(os.path.join(IMG,name),"JPEG",quality=84,optimize=True); return name
 
 # ---- images ----
-for n,long in [("hero",1800),("gate",1800),("rec-a",1700),("rec-b",1700),("rec-c",1700),("front-cloud",1800),("chalet",1700)]: prep(os.path.join(A,n+".jpg"),n+".jpg",long)
-for n in ("pool-house","terrace-1","terrace-2","master-bath","kitchen-2","master-closet-1","stairhall"): prep(os.path.join(A,"i",n+".jpg"),"i-"+n+".jpg",1400)
+EXT=[("hero",1800),("gate",1800),("rec-a",1800),("rec-b",1800),("rec-c",1800),("front-cloud",1800),("chalet",1800)]
+for n,long in EXT: prep(os.path.join(A,n+".jpg"),n+".jpg",long,82)
+tiles=re.findall(r'<figure class="tile rv" data-g="(\w+)" data-lb="interiors" data-src="assets/i/([\w-]+)\.jpg" data-cap="([^"]+)"',site)
+CAP={slug:cap for g,slug,cap in tiles}
+AR={}
+for g,slug,cap in tiles:
+    prep(os.path.join(A,"i",slug+".jpg"),"i-"+slug+".jpg",1500,78); AR["i-"+slug]=Image.open(os.path.join(IMG,"i-"+slug+".jpg")).size
+for n,_ in EXT: AR[n]=Image.open(os.path.join(IMG,n+".jpg")).size
 flat(os.path.join(A,"site-plan.png"),"site-plan.jpg",BONE,BASALT,2600)
 for n in ("basement","ground","first","second","guest"): flat(os.path.join(A,"plan-%s.png"%n),"plan-%s.jpg"%n,(27,25,21),WHITE,2200)
-tiles=re.findall(r'<figure class="tile rv" data-g="(\w+)" data-lb="interiors" data-src="assets/i/([\w-]+)\.jpg" data-cap="([^"]+)"',site)
-for g,slug,cap in tiles: prep(os.path.join(A,"t",slug+".jpg"),"t-"+slug+".jpg",900,76)
-GROUP={"arrive":"Arrival","live":"Living and kitchen","suite":"Suites","leisure":"Leisure","chalet":"Guest chalet"}
 
 def block(start,end): s=site.index(start); e=site.index(end,s); return site[s:e]
-story=block('<div class="story">','    <div class="fr wide rv wipe"')
 def panel(key):
     b=block('<div class="pp" data-p="%s"'%key,'        </div>\n'); return b[b.index('>')+1:]
+story=block('<div class="story">','    <div class="fr wide rv wipe"')
 spec=block('<div class="spec">','    <div class="specimg">')+'</div>'
 strat=block('<ul class="strat">','<p class="principle')
 principle=re.search(r'<p class="principle rv" style="--i:7">(.*?)</p>',site).group(1)
@@ -38,163 +41,77 @@ mql=block('<div class="mql rv"','    <div class="pfoot"><span><b>Villa 71</b> ·
 mats=block('<div class="mats rv" style="--i:2">','        <div class="fr rv wipe" style="--i:3" data-lb="scheme" data-src="assets/chalet.jpg"')
 def clean(s): return re.sub(r' (rv|wipe)\b','',re.sub(r' style="--i:\d+"','',s)).replace(' loading="lazy"','').replace(' decoding="async"','')
 
-N=16
-def foot(n,label): return '<div class="pfoot"><span><b>Villa 71</b> · %s</span><span class="pn">%02d / %02d</span></div>'%(label,n,N)
-def head(n,eyebrow,title,lede=''):
-    return '<div class="head"><div><p class="eyebrow"><span class="idx">%02d</span>%s</p><h2 class="title">%s</h2></div>%s</div>'%(n,eyebrow,title,('<p class="lede">%s</p>'%lede) if lede else '')
-
 sheets=[]
+def foot(label): return '<div class="pfoot"><span><b>Villa 71</b> · %s</span><span class="pn">{PN} / {N}</span></div>'%label
+def head(eyebrow,title,lede=''):
+    return '<div class="head"><div><p class="eyebrow"><span class="idx">{SN}</span>%s</p><h2 class="title">%s</h2></div>%s</div>'%(eyebrow,title,('<p class="lede">%s</p>'%lede) if lede else '')
+def imgbox(name,h=174,maxw=200):
+    ar=AR[name]; w=min(maxw,h*ar[0]/ar[1]); hh=w*ar[1]/ar[0]
+    return '<div class="fr plate-img" style="width:%.1fmm;height:%.1fmm"><img src="img/%s.jpg" alt=""></div>'%(w,hh,name)
+def plate(tone,eyebrow,title,note,name,label):
+    return '<section class="sheet %s plate">'%tone+'<div class="plate-txt"><p class="eyebrow"><span class="idx">{SN}</span>%s</p><h2 class="title">%s</h2><p class="lede">%s</p></div>'%(eyebrow,title,note)+imgbox(name)+foot(label)+'</section>'
+def tilepage(tone,eyebrow,title,slugs,label,note=''):
+    n=len(slugs); tl=''.join('<figure><div class="fr"><img src="img/i-%s.jpg" alt=""></div><figcaption>%s</figcaption></figure>'%(s,html.escape(CAP[s])) for s in slugs)
+    if n==1: return plate(tone,eyebrow,title,note or CAP[slugs[0]],'i-'+slugs[0],label)
+    if n==4: return '<section class="sheet %s">'%tone+'<div class="quad"><div class="plate-txt"><p class="eyebrow"><span class="idx">{SN}</span>%s</p><h2 class="title">%s</h2>%s</div><div class="grid2">%s</div></div>'%(eyebrow,title,('<p class="lede">%s</p>'%note) if note else '',tl)+foot(label)+'</section>'
+    return '<section class="sheet %s">'%tone+head(eyebrow,title,note)+'<div class="band band%d">%s</div>'%(n,tl)+foot(label)+'</section>'
+
 # 01 cover
-sheets.append('''<section class="sheet dark cover"><div class="cl"><div class="mark"><span class="v">Villa</span><span class="n">71</span></div><div class="side"><b>A private residence <em>in Guzape,</em> Abuja</b>Seven suites · guest chalet · pool<br>A365 Designs</div></div><div class="cr"><img src="img/hero.jpg" alt=""></div></section>''')
+sheets.append('<section class="sheet dark cover"><div class="cl"><div class="mark"><span class="v">Villa</span><span class="n">71</span></div><div class="side"><b>A private residence <em>in Guzape,</em> Abuja</b>Seven suites · guest chalet · pool<br>A365 Designs</div></div><div class="cr"><img src="img/hero.jpg" alt=""></div></section>')
 # 02 at a glance
-sheets.append('''<section class="sheet light">'''+head(2,'At a glance','Three floors, seven suites, <em>one garden wall.</em>')+'''
-<div class="g2"><div>
-<div class="stats"><div class="stat"><div class="n">7</div><div class="l">En-suite suites</div></div><div class="stat"><div class="n">4<small>+1</small></div><div class="l">Levels + guest chalet</div></div><div class="stat"><div class="n">1,735<small>m²</small></div><div class="l">Main house · four levels</div></div><div class="stat"><div class="n">2,000<small>m²</small></div><div class="l">Plot · 30 × 67 m</div></div><div class="stat"><div class="n">15<small>+</small></div><div class="l">Cars inside the wall</div></div><div class="stat"><div class="n">24,000<small>L</small></div><div class="l">Water reservoir</div></div></div>
-'''+clean(story)+'''</div>
-<div class="fr tall"><img src="img/gate.jpg" alt="" style="object-position:50% 45%"><span class="k"><i>01</i>From the road</span></div></div>'''+foot(2,'At a glance')+'</section>')
-# 03 the scheme
-sheets.append('''<section class="sheet dark">'''+head(3,'The scheme','Travertine, white render, <em>timber.</em>','Warm travertine against white render, timber slats over the terraces: the latest visualisations of the house.')+'''
-<div class="trip"><div class="fr"><img src="img/rec-a.jpg" alt=""><span class="k"><i>02</i>The approach</span></div><div class="fr"><img src="img/rec-b.jpg" alt=""><span class="k"><i>03</i>The corner</span></div><div class="fr"><img src="img/rec-c.jpg" alt=""><span class="k"><i>04</i>The forecourt</span></div></div>
-'''+clean(mats)+foot(3,'The scheme')+'</section>')
-# 04 the scheme II
-sheets.append('''<section class="sheet dark">'''+head(4,'The scheme','Under a Guzape sky, <em>and the guest chalet.</em>')+'''
-<div class="duo"><div class="fr"><img src="img/front-cloud.jpg" alt=""><span class="k"><i>05</i>The front</span></div><div class="fr"><img src="img/chalet.jpg" alt=""><span class="k"><i>06</i>Guest chalet</span></div></div>'''+foot(4,'The scheme')+'</section>')
-# 05 grounds
-sheets.append('''<section class="sheet dark grounds">'''+head(5,'Grounds','Pool, terraces, <em>courtyards.</em>','The pool, gazebo and outdoor kitchen sit at the rear of the plot; the drive, forecourt and guest chalet at the road.')+'''
-<div class="gv"><div class="fr"><img src="img/i-pool-house.jpg" alt=""><span class="k">Pool and house</span></div><div class="fr"><img src="img/i-terrace-1.jpg" alt=""><span class="k">Expanse terrace</span></div><div class="fr"><img src="img/i-terrace-2.jpg" alt=""><span class="k">Terrace dining</span></div></div>
-<div class="dims"><span><b>67.44 m</b>north</span><span><b>30.23 m</b>road frontage</span><span><b>66.24 m</b>south</span><span><b>30.11 m</b>rear</span><span><b>≈2,000 m²</b>plot</span></div>
-<div class="siteplan"><img src="img/site-plan.jpg" alt=""></div>'''+foot(5,'Grounds')+'</section>')
-# 06-08 interiors
-chunks=[tiles[0:18],tiles[18:36],tiles[36:51]]; rom=['I','II','III']
-for k,ch in enumerate(chunks):
-    groups=[]; [groups.append(GROUP[g]) for g,_,_ in ch if GROUP[g] not in groups]
-    grid=''.join('<figure><img src="img/t-%s.jpg" alt=""><figcaption>%s</figcaption></figure>'%(slug,html.escape(cap)) for g,slug,cap in ch)
-    sheets.append('<section class="sheet light">'+head(6+k,'Interiors · %s of III'%rom[k],'Fifty-one views, <em>one palette.</em>' if k==0 else '<em>%s.</em>'%(' · '.join(groups)),' · '.join(groups) if k==0 else '')+'<div class="masonry">'+grid+'</div>'+foot(6+k,'Interiors')+'</section>')
-# 09-12 plans
-for n,key,title,label in [(9,'ground','Ground <em>floor.</em>','Ground floor · N.T.S'),(10,'first','First <em>floor.</em>','First floor · N.T.S'),(11,'second','Second <em>floor.</em>','Second floor · N.T.S')]:
-    sheets.append('<section class="sheet light">'+head(n,'Plans','%s'%title)+'<div class="pv"><div class="planbox"><img src="img/plan-%s.jpg" alt=""><span class="k">%s</span></div><div class="pp">'%(key,label)+clean(panel(key))+'</div></div>'+foot(n,'Plans')+'</section>')
-sheets.append('<section class="sheet light">'+head(12,'Plans','Basement and <em>guest chalet.</em>','A lift and stair core serves four levels, from the basement garage and cinema to the second floor. Areas are as scheduled by the architects on the June 2026 drawings.')+'<div class="pv2"><div class="planbox"><img src="img/plan-basement.jpg" alt=""><span class="k">Basement · N.T.S</span></div><div class="pp">'+clean(panel('basement'))+'</div><div class="planbox"><img src="img/plan-guest.jpg" alt=""><span class="k">Guest chalet and staff · N.T.S</span></div><div class="pp">'+clean(panel('guest'))+'</div></div>'+foot(12,'Plans')+'</section>')
-# 13 climate
-sheets.append('''<section class="sheet light">'''+head(13,'Climate and ground','Sun, shade <em>and the hillside.</em>','Guzape sits at nine degrees north on the granite hills south of Abuja\'s centre: a high sun all year, harmattan haze from December, rains from April to October. The approach balcony, the largest of the villa\'s balconies, at three times of a December day.')+'''
-<div class="suns"><figure><svg data-h="9" viewBox="0 0 300 186"></svg><figcaption><b>09:00</b><span id="r9"></span></figcaption></figure><figure><svg data-h="12" viewBox="0 0 300 186"></svg><figcaption><b>12:00</b><span id="r12"></span></figcaption></figure><figure><svg data-h="15" viewBox="0 0 300 186"></svg><figcaption><b>15:00</b><span id="r15"></span></figcaption></figure></div>
-'''+clean(strat)+'</ul><p class="principle">'+principle+'</p>'+clean(facts)+foot(13,'Climate and ground')+'</section>')
-# 14 specification
-sheets.append('<section class="sheet light">'+head(14,'Specification','Built <em>to last.</em>')+clean(spec)+'<div class="specimg"><div class="fr"><img src="img/i-master-bath.jpg" alt=""></div><div class="fr"><img src="img/i-kitchen-2.jpg" alt=""></div><div class="fr"><img src="img/i-master-closet-1.jpg" alt=""></div><div class="fr"><img src="img/i-stairhall.jpg" alt=""></div></div>'+foot(14,'Specification')+'</section>')
-# 15 contact
-c=clean(cols).replace('<li><a href="#p9"><span class="num">09</span><span>Contact</span></a></li>','')
-c=re.sub(r'<ol class="toc">.*?</ol>','<ol class="toc"><li><span class="num">02</span><span>At a glance</span></li><li><span class="num">03</span><span>The scheme</span></li><li><span class="num">05</span><span>Grounds and site plan</span></li><li><span class="num">06</span><span>Interiors</span></li><li><span class="num">09</span><span>Plans</span></li><li><span class="num">13</span><span>Climate and ground</span></li><li><span class="num">14</span><span>Specification</span></li></ol>',c,flags=re.S)
-sheets.append('<section class="sheet dark contact">'+head(15,'Contact','See the house <em>in Guzape.</em>','Drawings, the full specification and a site visit can be arranged through A365 Designs.')+'<div class="cg"><div>'+c+'</div><div class="fr"><img src="img/rec-b.jpg" alt=""><span class="k">The corner</span></div></div><p class="disc">'+disc+'</p>'+clean(mql)+foot(15,'Contact')+'</section>')
-# 16 back
+sheets.append('<section class="sheet light">'+head('At a glance','Three floors, seven suites, <em>one garden wall.</em>')+'<div class="g2"><div><div class="stats"><div class="stat"><div class="n">7</div><div class="l">En-suite suites</div></div><div class="stat"><div class="n">4<small>+1</small></div><div class="l">Levels + guest chalet</div></div><div class="stat"><div class="n">1,735<small>m²</small></div><div class="l">Main house · four levels</div></div><div class="stat"><div class="n">2,000<small>m²</small></div><div class="l">Plot · 30 × 67 m</div></div><div class="stat"><div class="n">15<small>+</small></div><div class="l">Cars inside the wall</div></div><div class="stat"><div class="n">24,000<small>L</small></div><div class="l">Water reservoir</div></div></div>'+clean(story)+'</div><div class="fr tall"><img src="img/gate.jpg" alt="" style="object-position:50% 45%"><span class="k"><i>01</i>From the road</span></div></div>'+foot('At a glance')+'</section>')
+# the scheme: overview, then one exterior view per page, the chalet last
+sheets.append('<section class="sheet dark">'+head('The scheme','Travertine, white render, <em>timber.</em>','Warm travertine against white render, timber slats over the terraces: the latest visualisations of the house, one view to a page.')+'<div class="trip"><div class="fr"><img src="img/rec-a.jpg" alt=""><span class="k"><i>02</i>The approach</span></div><div class="fr"><img src="img/rec-b.jpg" alt=""><span class="k"><i>03</i>The corner</span></div><div class="fr"><img src="img/rec-c.jpg" alt=""><span class="k"><i>04</i>The forecourt</span></div></div>'+clean(mats)+foot('The scheme')+'</section>')
+for name,title,note in [("hero","The garden <em>side.</em>","The rounded parapet, the travertine tower and the timber slats over the terrace, seen from the cactus garden."),("rec-a","The <em>approach.</em>","Cars under the porte-cochère, the travertine tower and the slatted roof terrace above."),("rec-b","The <em>corner.</em>","The rounded corner of the house from the drive."),("rec-c","The <em>forecourt.</em>","The forecourt with the palm and the travertine tower."),("front-cloud","Under a <em>Guzape sky.</em>","The front of the villa, timber slats shading the roof terrace."),("gate","From the <em>road.</em>","The gatehouse and the garage door in the boundary wall, the villa rising behind."),("chalet","The guest <em>chalet.</em>","A single-storey guest chalet in travertine and white render beside the drive.")]:
+    sheets.append(plate('dark','The scheme',title,note,name,'The scheme'))
+# grounds: page by page
+sheets.append(plate('dark','Grounds','Pool and <em>house.</em>',"The pool with the villa's garden elevation behind it, a parasol and loungers on the deck.",'i-pool-house','Grounds'))
+sheets.append(plate('dark','Grounds','Expanse <em>terrace.</em>','The second-floor terrace with a fire pit, parasol and lounge seating under the timber pergola.','i-terrace-1','Grounds'))
+sheets.append(plate('dark','Grounds','Terrace <em>dining.</em>','Dining on the terrace, palms and the rounded parapet edge.','i-terrace-2','Grounds'))
+sheets.append(tilepage('dark','Grounds','The <em>courtyard.</em>',['garden-1','garden-2'],'Grounds','The indoor garden: a planted court at the heart of the ground floor, glazed on every side.'))
+sheets.append('<section class="sheet dark grounds">'+head('Grounds','The <em>site.</em>','The pool, gazebo and outdoor kitchen sit at the rear of the plot; the drive, forecourt and guest chalet at the road.')+'<div class="dims"><span><b>67.44 m</b>north</span><span><b>30.23 m</b>road frontage</span><span><b>66.24 m</b>south</span><span><b>30.11 m</b>rear</span><span><b>≈2,000 m²</b>plot</span></div><div class="siteplan big"><img src="img/site-plan.jpg" alt=""></div>'+foot('Grounds')+'</section>')
+# interiors: website order, at most four to a page, main rooms on their own pages, chalet last
+INT=[('Arrival','The grand <em>lobby.</em>',['lobby','lobby-entrance','stairhall','lounge'],'The entrance sequence: lobby, stair hall and lounge.'),
+     ('Living and kitchen','The main <em>living room.</em>',['living-1','living-2','living-3','living-dining'],'The 98 m² living and entertainment room, opening to the garden and the dining.'),
+     ('Living and kitchen','<em>Dining.</em>',['dining'],'The dining room off the main living room.'),
+     ('Living and kitchen','The <em>kitchen.</em>',['kitchen-1','kitchen-2'],'Marble island, integrated appliances, a window over the counter.'),
+     ('Living and kitchen','Private lounge and <em>home office.</em>',['private-lounge-1','private-lounge-2','office'],''),
+     ('Living and kitchen','The family <em>lounge.</em>',['family-1','family-2','boxroom'],'The first-floor family living room, with the box room beside it.'),
+     ('Suites','Suite <em>1.</em>',['suite1-1','suite1-2'],'The largest of the first-floor suites, 70 m² with dressing room and bathroom.'),
+     ('Suites','Suite <em>2.</em>',['suite2-1','suite2-2','suite2-bath'],''),
+     ('Suites','Suite <em>3.</em>',['suite3-1','suite3-2','suite3-bath-1','suite3-bath-2'],''),
+     ('Suites','Suite <em>4.</em>',['suite4-1','suite4-2','suite4-bath-1','suite4-bath-2'],''),
+     ('Suites','The master <em>suite.</em>',['master-lounge-1','master-lounge-2','master-bed-1','master-bed-2'],'Lounge and bedroom on the second floor.'),
+     ('Suites','Master suite · <em>dressing and bath.</em>',['master-closet-1','master-closet-2','master-closet-3','master-bath'],''),
+     ('Leisure','The <em>gym.</em>',['gym-1','gym-2'],''),
+     ('Leisure','The <em>cinema.</em>',['cinema-1','cinema-2','cinema-3'],'In the basement, beside the garage.'),
+     ('Guest chalet','The guest <em>chalet.</em>',['chalet-living','chalet-kitchen-1','chalet-kitchen-2'],'Living room and kitchen of the one-bedroom chalet by the drive.')]
+used=set(sum([x[2] for x in INT],[])+['garden-1','garden-2','pool-house','terrace-1','terrace-2'])
+missing=[s for _,s,_ in tiles if s not in used]; assert not missing, missing
+for ey,ti,sl,note in INT: sheets.append(tilepage('light','Interiors · '+ey,ti,sl,'Interiors',note))
+# plans: -1, ground, first, second, then the chalet on its own
+for key,title,label,lede in [('basement','Basement <em>(−1).</em>','Basement · N.T.S','Cut into the hillside below the entrance side: garage, cinema and a staff room, 2.85 m below the ground floor.'),('ground','Ground <em>floor.</em>','Ground floor · N.T.S','A lift and stair core serves four levels, from the basement garage and cinema to the second floor. Areas are as scheduled by the architects on the June 2026 drawings.'),('first','First <em>floor.</em>','First floor · N.T.S',''),('second','Second <em>floor.</em>','Second floor · N.T.S',''),('guest','The guest <em>chalet.</em>','Guest chalet and staff · N.T.S','A one-bedroom guest chalet with its own living room and kitchen, plus two staff rooms and a laundry, beside the drive.')]:
+    sheets.append('<section class="sheet light">'+head('Plans',title,lede)+'<div class="pv"><div class="planbox"><img src="img/plan-%s.jpg" alt=""><span class="k">%s</span></div><div class="pp">'%(key,label)+clean(panel(key))+'</div></div>'+foot('Plans')+'</section>')
+# climate
+sheets.append('<section class="sheet light">'+head('Climate and ground','Sun, shade <em>and the hillside.</em>',"Guzape sits at nine degrees north on the granite hills south of Abuja's centre: a high sun all year, harmattan haze from December, rains from April to October. The approach balcony, the largest of the villa's balconies, at three times of a December day.")+'<div class="suns"><figure><svg data-h="9" viewBox="0 0 300 186"></svg><figcaption><b>09:00</b><span id="r9"></span></figcaption></figure><figure><svg data-h="12" viewBox="0 0 300 186"></svg><figcaption><b>12:00</b><span id="r12"></span></figcaption></figure><figure><svg data-h="15" viewBox="0 0 300 186"></svg><figcaption><b>15:00</b><span id="r15"></span></figcaption></figure></div>'+clean(strat)+'</ul><p class="principle">'+principle+'</p>'+clean(facts)+foot('Climate and ground')+'</section>')
+# specification
+sheets.append('<section class="sheet light">'+head('Specification','Built <em>to last.</em>')+clean(spec)+'<div class="specimg"><div class="fr"><img src="img/i-master-bath.jpg" alt=""></div><div class="fr"><img src="img/i-kitchen-2.jpg" alt=""></div><div class="fr"><img src="img/i-master-closet-1.jpg" alt=""></div><div class="fr"><img src="img/i-stairhall.jpg" alt=""></div></div>'+foot('Specification')+'</section>')
+# contact
+c=clean(cols); c=re.sub(r'<h4>In this brochure</h4>\s*<ol class="toc">.*?</ol>','<h4>In this brochure</h4><ol class="toc">{TOC}</ol>',c,flags=re.S)
+sheets.append('<section class="sheet dark contact">'+head('Contact','See the house <em>in Guzape.</em>','Drawings, the full specification and a site visit can be arranged through A365 Designs.')+'<div class="cg"><div>'+c+'</div><div class="fr"><img src="img/rec-b.jpg" alt=""><span class="k">The corner</span></div></div><p class="disc">'+disc+'</p>'+clean(mql)+foot('Contact')+'</section>')
 sheets.append('<section class="sheet dark back"><div class="mark"><span class="v">Villa</span><span class="n">71</span></div><p>Guzape · Abuja · A365 Designs · brochure by Mizan Qist Limited · 2026</p></section>')
 
-CSS='''
-@page{size:297mm 210mm;margin:0}
-:root{--white:#f6f3ec;--white-2:#ece6da;--white-3:#dfd6c6;--basalt:#15130f;--basalt-2:#1d1a15;--basalt-3:#2a251d;--trav:#d6c5a6;--bronze:#8f6234;--bronze-2:#c48f52;--bronze-3:#e2b57c;--ink:#1b1915;--bone:#efe9dc;--font-d:"Cormorant",Garamond,serif;--font-b:"Manrope","Helvetica Neue",Arial,sans-serif}
-*{box-sizing:border-box}html,body{margin:0;padding:0}
-body{font-family:var(--font-b);font-weight:300;font-size:9.5pt;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.sheet{width:297mm;height:210mm;overflow:hidden;position:relative;padding:14mm 14mm 11mm;page-break-after:always;break-after:page;background:var(--bg);color:var(--fg)}
-.sheet.dark{--bg:var(--basalt);--bg-2:var(--basalt-2);--bg-3:var(--basalt-3);--fg:var(--bone);--muted:#9d937f;--line:rgba(239,233,220,.16);--acc:var(--bronze-2);--acc-2:var(--bronze-3)}
-.sheet.light{--bg:var(--white);--bg-2:var(--white-2);--bg-3:var(--white-3);--fg:var(--ink);--muted:#77705f;--line:rgba(27,25,21,.14);--acc:var(--bronze);--acc-2:#a08c67}
-img{display:block;max-width:100%}
-.eyebrow{font-size:7pt;letter-spacing:.3em;text-transform:uppercase;font-weight:600;color:var(--acc);margin:0 0 3mm;display:flex;align-items:center;gap:3mm}
-.eyebrow .idx{font-family:var(--font-d);font-weight:400;font-size:11pt;letter-spacing:.04em;color:var(--muted);text-transform:none}
-.eyebrow::before{content:"";width:7mm;height:.3mm;background:var(--acc)}
-.title{font-family:var(--font-d);font-weight:300;font-size:26pt;line-height:1;letter-spacing:-.01em;margin:0}
-.title em{font-style:italic;font-weight:300;color:var(--acc)}
-.lede{font-family:var(--font-d);font-weight:400;font-size:12.5pt;line-height:1.35;margin:0;max-width:60ch}
-.body{margin:0 0 3mm;font-size:9pt}
-.head{display:grid;grid-template-columns:1.15fr .85fr;gap:8mm;align-items:end;margin:0 0 6mm}
-.pfoot{position:absolute;left:14mm;right:14mm;bottom:7mm;display:flex;justify-content:space-between;align-items:baseline;padding-top:2mm;border-top:.25mm solid var(--line);font-size:6.5pt;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
-.pfoot b{font-weight:500;color:var(--fg)}.pfoot .pn{font-family:var(--font-d);font-size:10pt;letter-spacing:.06em;text-transform:none;color:var(--fg)}
-.fr{position:relative;overflow:hidden;border-radius:0 9mm 0 0;background:var(--bg-2)}
-.fr img{width:100%;height:100%;object-fit:cover}
-.fr .k{position:absolute;left:0;bottom:0;padding:2.2mm 3.5mm;font-size:6pt;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:#fff;background:linear-gradient(90deg,rgba(21,19,15,.62),rgba(21,19,15,0))}
-.fr .k i{font-style:normal;font-family:var(--font-d);font-size:9pt;letter-spacing:.06em;text-transform:none;margin-right:2.5mm;color:var(--trav)}
-/* cover */
-.cover{padding:0;display:grid;grid-template-columns:118mm 1fr}
-.cover .cl{padding:16mm 12mm 14mm 16mm;display:flex;flex-direction:column;justify-content:flex-end;gap:10mm}
-.cover .mark,.back .mark{font-family:var(--font-d);font-weight:300;line-height:.8;display:flex;align-items:flex-end;gap:5mm}
-.cover .mark .v,.back .mark .v{font-size:16pt;letter-spacing:.34em;text-transform:uppercase;font-weight:400;writing-mode:vertical-rl;transform:rotate(180deg);color:var(--trav);margin-bottom:3mm}
-.cover .mark .n,.back .mark .n{font-size:150pt;letter-spacing:-.04em;margin-left:-.03em;color:#fff}
-.cover .side{font-size:7.5pt;letter-spacing:.26em;text-transform:uppercase;font-weight:500;line-height:2;color:rgba(255,255,255,.88)}
-.cover .side b{display:block;font-family:var(--font-d);font-weight:300;font-size:19pt;letter-spacing:.02em;text-transform:none;line-height:1.1;margin-bottom:3mm;color:#fff}
-.cover .side b em{font-style:italic;color:var(--trav)}
-.cover .cr{height:210mm;overflow:hidden}.cover .cr img{width:100%;height:100%;object-fit:cover;object-position:56% 40%}
-.back{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8mm}
-.back .mark .n{font-size:90pt}.back p{margin:0;font-size:7pt;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
-/* at a glance */
-.g2{display:grid;grid-template-columns:1fr 92mm;gap:8mm;align-items:stretch;height:150mm}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:.25mm solid var(--line);border-bottom:.25mm solid var(--line);margin:0 0 5mm}
-.stat{padding:3mm 3mm 3mm 0;border-right:.25mm solid var(--line)}.stat:nth-child(3n){border-right:0}.stat:nth-child(-n+3){border-bottom:.25mm solid var(--line)}
-.stat .n{font-family:var(--font-d);font-weight:300;font-size:22pt;line-height:1}.stat .n small{font-size:.5em;margin-left:.5mm;color:var(--acc)}
-.stat .l{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:1.5mm;font-weight:600}
-.story{display:grid;grid-template-columns:1fr 46mm;gap:6mm;align-items:start}
-.story .lede{font-size:11.5pt;margin-bottom:2.5mm}.story .body{color:var(--muted);font-size:8.6pt}
-.feat{list-style:none;margin:0;padding:0;border-top:.25mm solid var(--line)}
-.feat li{padding:2.2mm 0;border-bottom:.25mm solid var(--line)}
-.feat li b{display:block;font-family:var(--font-d);font-weight:500;font-size:12pt;line-height:1.15}
-.feat li span{font-size:6.2pt;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.fr.tall{height:150mm}
-/* scheme */
-.trip{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;height:112mm;margin-bottom:5mm}
-.mats{display:grid;grid-template-columns:repeat(3,1fr);border:.25mm solid var(--line);border-radius:0 6mm 0 0;overflow:hidden}
-.mat{padding:3.5mm 4mm;border-right:.25mm solid var(--line);display:grid;grid-template-columns:22mm 1fr;gap:3mm;align-items:center}.mat:last-child{border-right:0}
-.mat .sw{height:12mm;border-radius:0 3mm 0 0}
-.mat .sw.trav{background:linear-gradient(135deg,#e3d4b6,#cdb894 55%,#dccdb0)}.mat .sw.render{background:linear-gradient(135deg,#f7f4ee,#e9e3d6)}.mat .sw.timber{background:repeating-linear-gradient(90deg,#8d5a2b 0 2.2mm,#a26c37 2.2mm 3mm,#7a4c22 3mm 3.5mm)}
-.mat b{display:block;font-weight:500;font-size:9pt}.mat span{font-size:6.2pt;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:6mm;height:158mm}
-/* grounds */
-.grounds .head{margin-bottom:4mm}
-.gv{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;height:58mm;margin-bottom:3mm}
-.dims{display:flex;gap:8mm;font-size:6.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2mm}
-.dims b{font-family:var(--font-d);font-weight:400;font-size:11pt;letter-spacing:0;text-transform:none;color:var(--fg);margin-right:1.5mm}.dims .r{margin-left:auto}
-.siteplan{height:84mm;border:.25mm solid var(--line);border-radius:0 6mm 0 0;overflow:hidden;background:var(--basalt)}.siteplan img{width:100%;height:100%;object-fit:contain}
-/* interiors */
-.masonry{display:grid;grid-template-columns:repeat(6,1fr);gap:3.2mm 3mm}
-.masonry figure{margin:0}.masonry img{width:100%;height:47mm;object-fit:cover;border-radius:0 4mm 0 0}
-.masonry figcaption{font-size:6pt;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:1.5mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
-/* plans */
-.pv{display:grid;grid-template-columns:1fr 72mm;gap:8mm;height:158mm}
-.pv2{display:grid;grid-template-columns:1fr 62mm 1fr 62mm;gap:5mm;height:150mm}
-.planbox{position:relative;border:.25mm solid var(--line);border-radius:0 8mm 0 0;background:#fff;padding:5mm;height:100%}
-.planbox img{width:100%;height:100%;object-fit:contain}
-.planbox .k{position:absolute;left:0;bottom:0;padding:2mm 3.5mm;font-size:6pt;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:var(--muted)}
-.floornote{font-family:var(--font-d);font-size:12.5pt;font-weight:300;line-height:1.25;margin:0 0 3mm}.floornote em{font-style:italic;color:var(--acc)}
-.rooms{list-style:none;margin:0;padding:0;border-top:.25mm solid var(--line)}
-.rooms li{display:flex;justify-content:space-between;gap:3mm;padding:1.6mm 0;border-bottom:.25mm solid var(--line);font-size:8pt}.rooms li span:last-child{color:var(--muted)}.rooms li.tot{font-weight:500}.rooms li.tot span:last-child{color:var(--fg)}
-.pv2 .rooms li{font-size:7.4pt;padding:1.3mm 0}.pv2 .floornote{font-size:10.5pt}
-/* climate */
-.suns{display:grid;grid-template-columns:repeat(3,1fr);gap:5mm;margin-bottom:3.5mm}
-.suns figure{margin:0;border:.25mm solid var(--line);border-radius:0 5mm 0 0;padding:2.5mm 2.5mm 2mm;background:var(--white)}
-.suns svg{max-height:44mm}
-.suns svg{width:100%;height:auto;display:block;font-family:var(--font-b)}
-.suns figcaption{display:flex;justify-content:space-between;font-size:6.5pt;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:2mm}.suns figcaption b{color:var(--fg)}
-.sk-sky{fill:var(--white-2)}.sk-ground{fill:var(--white-3)}.sk-wall{fill:var(--white);stroke:var(--ink);stroke-width:.6}.sk-slab{fill:var(--white-3);stroke:var(--ink);stroke-width:.6}.sk-slat{fill:var(--bronze)}.sk-glass{fill:#9fb4bd;opacity:.35}.sk-shade{fill:var(--basalt);opacity:.2}.sk-sun{fill:var(--bronze-2)}.sk-ray{stroke:var(--bronze);stroke-width:.4;opacity:.55;stroke-dasharray:1.2 1.6}.sk-arc{fill:none;stroke:rgba(27,25,21,.34);stroke-width:.4;stroke-dasharray:1 1.6}
-.sk-txt{font-size:2.7px;letter-spacing:.16em;text-transform:uppercase;fill:#77705f;font-weight:600}.sk-txt.b{font-family:var(--font-d);font-size:5.2px;letter-spacing:0;text-transform:none;fill:var(--ink);font-weight:500}.sk-dim{stroke:rgba(27,25,21,.34);stroke-width:.3}.sk-people{fill:none;stroke:var(--ink);stroke-width:.5;stroke-linecap:round}.sk-car{fill:none;stroke:var(--ink);stroke-width:.45}
-.strat{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0 6mm;border-top:.25mm solid var(--line)}
-.strat li{display:grid;grid-template-columns:20mm 1fr;gap:2mm;padding:1.6mm 0;border-bottom:.25mm solid var(--line);font-size:7pt;line-height:1.35}
-.strat li .h{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);padding-top:.8mm;font-weight:600}.strat li p{margin:0;color:var(--muted)}.strat li p b{color:var(--fg);font-weight:500}
-.principle{font-family:var(--font-d);font-weight:300;font-size:11pt;margin:2mm 0 0}
-.clim-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:6mm;margin-top:2.5mm;padding-top:2.5mm;border-top:.25mm solid var(--line)}
-.clim-facts .n{font-family:var(--font-d);font-weight:300;font-size:15pt;line-height:1}.clim-facts .n small{font-size:6.5pt;color:var(--acc);margin-left:1mm;letter-spacing:.1em;font-family:var(--font-b)}
-.clim-facts .l{font-size:6pt;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin:1.5mm 0;font-weight:600}.clim-facts p{margin:0;font-size:6.8pt;line-height:1.35;color:var(--muted)}
-/* specification */
-.spec{display:grid;grid-template-columns:repeat(3,1fr);gap:8mm;margin-bottom:6mm}
-.spec h4{font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:var(--acc);margin:0 0 2.5mm;padding-bottom:2mm;border-bottom:.25mm solid var(--line);font-weight:600}
-.spec ul{list-style:none;margin:0;padding:0}.spec li{padding:1.8mm 0 1.8mm 4mm;position:relative;font-size:8.2pt;line-height:1.4;border-bottom:.25mm solid var(--line)}.spec li::before{content:"";position:absolute;left:0;top:3.6mm;width:2mm;height:.25mm;background:var(--acc)}
-.specimg{display:grid;grid-template-columns:repeat(4,1fr);gap:4mm;height:66mm}
-/* contact */
-.cg{display:grid;grid-template-columns:1fr 78mm;gap:8mm;align-items:start;margin-bottom:5mm}
-.cg .fr{height:105mm}
-.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6mm}.cols h4{font-size:6.5pt;letter-spacing:.28em;text-transform:uppercase;color:var(--acc);margin:0 0 2.5mm;font-weight:600}
-.toc{list-style:none;margin:0;padding:0}.toc li{display:flex;gap:3mm;padding:1.4mm 0;border-bottom:.25mm solid var(--line);font-size:8pt}.toc li .num{font-family:var(--font-d);color:var(--muted);width:6mm}
-.who{margin:0 0 2.5mm;font-size:8pt;line-height:1.5}.who b{display:block;font-weight:500;color:var(--fg)}
-.contact{display:flex;flex-direction:column}.contact a{display:flex;justify-content:space-between;align-items:center;gap:3mm;text-decoration:none;color:inherit;padding:1.6mm 0;border-bottom:.25mm solid var(--line);font-size:8pt}
-.contact a .chip{display:inline-flex;align-items:center;gap:1.5mm;font-size:6pt;letter-spacing:.2em;text-transform:uppercase;font-weight:600;color:var(--acc)}.contact a .chip svg{width:3.4mm;height:3.4mm;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.disc{font-size:7pt;color:var(--muted);line-height:1.45;max-width:190mm;margin:0}
-.mql{display:flex;flex-wrap:wrap;align-items:center;gap:1.5mm 6mm;margin:2.5mm 0 0;font-size:7pt;color:var(--muted)}
-.mql a{display:inline-flex;align-items:center;gap:1.5mm;color:var(--acc);text-decoration:none;font-weight:500}.mql a svg{width:3.2mm;height:3.2mm;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-'''
+# numbering and contents
+N=len(sheets); out=[]; first={}
+for i,sh in enumerate(sheets,1):
+    lab=re.search(r'<b>Villa 71</b> · ([^<]+)</span>',sh); key=lab.group(1) if lab else None
+    if key and key not in first: first[key]=i
+    out.append(sh.replace('{PN}','%02d'%i).replace('{N}','%02d'%N).replace('{SN}','%02d'%i))
+toc=''.join('<li><span class="num">%02d</span><span>%s</span></li>'%(first[k],k) for k in ['At a glance','The scheme','Grounds','Interiors','Plans','Climate and ground','Specification'] if k in first)
+sheets=[x.replace('{TOC}',toc) for x in out]
+
+CSS=open(os.path.join(P,"print.css"),encoding="utf-8").read()
+
 JS=r'''
 (function(){
   var NS='http://www.w3.org/2000/svg', LAT=9.06*Math.PI/180, dec=-23.44*Math.PI/180;
