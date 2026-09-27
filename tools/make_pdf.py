@@ -51,10 +51,10 @@ def imgbox(name,h=174,maxw=200):
     return '<div class="fr plate-img" style="width:%.1fmm;height:%.1fmm"><img src="img/%s.jpg" alt=""></div>'%(w,hh,name)
 def plate(tone,eyebrow,title,note,name,label):
     return '<section class="sheet %s plate">'%tone+'<div class="plate-txt"><p class="eyebrow"><span class="idx">{SN}</span>%s</p><h2 class="title">%s</h2><p class="lede">%s</p></div>'%(eyebrow,title,note)+imgbox(name)+foot(label)+'</section>'
-def tilepage(tone,eyebrow,title,slugs,label,note=''):
+def tilepage(tone,eyebrow,title,slugs,label,note='',whole=False):
     n=len(slugs); tl=''.join('<figure><div class="fr"><img src="img/i-%s.jpg" alt=""></div><figcaption>%s</figcaption></figure>'%(s,html.escape(CAP[s])) for s in slugs)
     if n==1: return plate(tone,eyebrow,title,note or CAP[slugs[0]],'i-'+slugs[0],label)
-    if n==4: return '<section class="sheet %s">'%tone+'<div class="quad"><div class="plate-txt"><p class="eyebrow"><span class="idx">{SN}</span>%s</p><h2 class="title">%s</h2>%s</div><div class="grid2">%s</div></div>'%(eyebrow,title,('<p class="lede">%s</p>'%note) if note else '',tl)+foot(label)+'</section>'
+    if n==4 and not whole: return '<section class="sheet %s">'%tone+'<div class="quad"><div class="plate-txt"><p class="eyebrow"><span class="idx">{SN}</span>%s</p><h2 class="title">%s</h2>%s</div><div class="grid2">%s</div></div>'%(eyebrow,title,('<p class="lede">%s</p>'%note) if note else '',tl)+foot(label)+'</section>'
     return '<section class="sheet %s">'%tone+head(eyebrow,title,note)+'<div class="band band%d">%s</div>'%(n,tl)+foot(label)+'</section>'
 
 # 01 cover
@@ -100,7 +100,8 @@ for key,title,label,lede in [('basement','Basement <em>(âˆ’1).</em>','Basement Â
 # climate
 sheets.append('<section class="sheet light">'+head('Climate and ground','Sun, shade <em>and the hillside.</em>',"Guzape sits at nine degrees north on the granite hills south of Abuja's centre: a high sun all year, harmattan haze from December, rains from April to October. The approach balcony, the largest of the villa's balconies, at three times of a December day.")+'<div class="suns"><figure><svg data-h="9" viewBox="0 0 300 186"></svg><figcaption><b>09:00</b><span id="r9"></span></figcaption></figure><figure><svg data-h="12" viewBox="0 0 300 186"></svg><figcaption><b>12:00</b><span id="r12"></span></figcaption></figure><figure><svg data-h="15" viewBox="0 0 300 186"></svg><figcaption><b>15:00</b><span id="r15"></span></figcaption></figure></div>'+clean(strat)+'</ul><p class="principle">'+principle+'</p>'+clean(facts)+foot('Climate and ground')+'</section>')
 # specification
-sheets.append('<section class="sheet light">'+head('Specification','Built <em>to last.</em>')+clean(spec)+clean(svc)+'<div class="specimg"><div class="fr"><img src="img/i-master-bath.jpg" alt=""></div><div class="fr"><img src="img/i-kitchen-2.jpg" alt=""></div><div class="fr"><img src="img/i-master-closet-1.jpg" alt=""></div><div class="fr"><img src="img/i-stairhall.jpg" alt=""></div></div>'+foot('Specification')+'</section>')
+sheets.append('<section class="sheet light">'+head('Specification','Built <em>to last.</em>')+clean(spec)+clean(svc)+foot('Specification')+'</section>')
+sheets.append(tilepage('light','Specification','Finishes, <em>up close.</em>',['master-bath','kitchen-2','master-closet-1','stairhall'],'Specification','Marble, quartz and oak: the master bathroom, the kitchen island, the dressing room and the stair hall.',whole=True))
 # contact
 c=clean(cols); c=re.sub(r'<h4>In this brochure</h4>\s*<ol class="toc">.*?</ol>','<h4>In this brochure</h4><ol class="toc">{TOC}</ol>',c,flags=re.S)
 sheets.append('<section class="sheet dark contact">'+head('Contact','See the house <em>in Guzape.</em>','Drawings, the full specification and a site visit can be arranged through A365 Designs.')+'<div class="cg"><div>'+c+'</div><div class="fr"><img src="img/rec-b.jpg" alt=""><span class="k">The corner</span></div></div><p class="disc">'+disc+'</p>'+clean(mql)+foot('Contact')+'</section>')
