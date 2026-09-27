@@ -31,7 +31,8 @@ def block(start,end): s=site.index(start); e=site.index(end,s); return site[s:e]
 def panel(key):
     b=block('<div class="pp" data-p="%s"'%key,'        </div>\n'); return b[b.index('>')+1:]
 story=block('<div class="story">','    <div class="fr wide rv wipe"')
-spec=block('<div class="spec">','    <div class="specimg">')+'</div>'
+spec=block('<div class="spec">','    <div class="svc rv"')
+svc=block('<div class="svc rv"','    <div class="specimg">')
 strat=block('<ul class="strat">','<p class="principle')
 principle=re.search(r'<p class="principle rv" style="--i:7">(.*?)</p>',site).group(1)
 facts=block('<div class="clim-facts">','    <div class="pfoot"><span><b>Villa 71</b> · Climate and ground</span>')
@@ -71,8 +72,12 @@ sheets.append(plate('dark','Grounds','Terrace <em>dining.</em>','Dining on the t
 sheets.append(tilepage('dark','Grounds','The <em>courtyard.</em>',['garden-1','garden-2'],'Grounds','The indoor garden: a planted court at the heart of the ground floor, glazed on every side.'))
 sheets.append('<section class="sheet dark grounds">'+head('Grounds','The <em>site.</em>','The pool, gazebo and outdoor kitchen sit at the rear of the plot; the drive, forecourt and guest chalet at the road.')+'<div class="dims"><span><b>67.44 m</b>north</span><span><b>30.23 m</b>road frontage</span><span><b>66.24 m</b>south</span><span><b>30.11 m</b>rear</span><span><b>≈2,000 m²</b>plot</span></div><div class="siteplan big"><img src="img/site-plan.jpg" alt=""></div>'+foot('Grounds')+'</section>')
 # interiors: website order, at most four to a page, main rooms on their own pages, chalet last
-INT=[('Arrival','The grand <em>lobby.</em>',['lobby','lobby-entrance','stairhall','lounge'],'The entrance sequence: lobby, stair hall and lounge.'),
-     ('Living and kitchen','The main <em>living room.</em>',['living-1','living-2','living-3','living-dining'],'The 98 m² living and entertainment room, opening to the garden and the dining.'),
+INT=[('Arrival','The grand <em>lobby.</em>',['lobby'],'The double-height lobby: a planted court, a stair hall in oak and bronze, light from above.'),
+     ('Arrival','The <em>entrance.</em>',['lobby-entrance','stairhall','lounge'],'The entrance sequence: lobby, stair hall and lounge.'),
+     ('Living and kitchen','The main <em>living room.</em>',['living-1'],'The 98 m² living and entertainment room at the heart of the ground floor.'),
+     ('Living and kitchen','Living room · <em>to the garden.</em>',['living-2'],'The living room opening to the garden and the dining.'),
+     ('Living and kitchen','Living room · <em>close.</em>',['living-3'],'Curved sofas, the glass chandelier and the media wall.'),
+     ('Living and kitchen','Living and <em>dining.</em>',['living-dining'],'The dining room seen from the living room.'),
      ('Living and kitchen','<em>Dining.</em>',['dining'],'The dining room off the main living room.'),
      ('Living and kitchen','The <em>kitchen.</em>',['kitchen-1','kitchen-2'],'Marble island, integrated appliances, a window over the counter.'),
      ('Living and kitchen','Private lounge and <em>home office.</em>',['private-lounge-1','private-lounge-2','office'],''),
@@ -95,7 +100,7 @@ for key,title,label,lede in [('basement','Basement <em>(−1).</em>','Basement �
 # climate
 sheets.append('<section class="sheet light">'+head('Climate and ground','Sun, shade <em>and the hillside.</em>',"Guzape sits at nine degrees north on the granite hills south of Abuja's centre: a high sun all year, harmattan haze from December, rains from April to October. The approach balcony, the largest of the villa's balconies, at three times of a December day.")+'<div class="suns"><figure><svg data-h="9" viewBox="0 0 300 186"></svg><figcaption><b>09:00</b><span id="r9"></span></figcaption></figure><figure><svg data-h="12" viewBox="0 0 300 186"></svg><figcaption><b>12:00</b><span id="r12"></span></figcaption></figure><figure><svg data-h="15" viewBox="0 0 300 186"></svg><figcaption><b>15:00</b><span id="r15"></span></figcaption></figure></div>'+clean(strat)+'</ul><p class="principle">'+principle+'</p>'+clean(facts)+foot('Climate and ground')+'</section>')
 # specification
-sheets.append('<section class="sheet light">'+head('Specification','Built <em>to last.</em>')+clean(spec)+'<div class="specimg"><div class="fr"><img src="img/i-master-bath.jpg" alt=""></div><div class="fr"><img src="img/i-kitchen-2.jpg" alt=""></div><div class="fr"><img src="img/i-master-closet-1.jpg" alt=""></div><div class="fr"><img src="img/i-stairhall.jpg" alt=""></div></div>'+foot('Specification')+'</section>')
+sheets.append('<section class="sheet light">'+head('Specification','Built <em>to last.</em>')+clean(spec)+clean(svc)+'<div class="specimg"><div class="fr"><img src="img/i-master-bath.jpg" alt=""></div><div class="fr"><img src="img/i-kitchen-2.jpg" alt=""></div><div class="fr"><img src="img/i-master-closet-1.jpg" alt=""></div><div class="fr"><img src="img/i-stairhall.jpg" alt=""></div></div>'+foot('Specification')+'</section>')
 # contact
 c=clean(cols); c=re.sub(r'<h4>In this brochure</h4>\s*<ol class="toc">.*?</ol>','<h4>In this brochure</h4><ol class="toc">{TOC}</ol>',c,flags=re.S)
 sheets.append('<section class="sheet dark contact">'+head('Contact','See the house <em>in Guzape.</em>','Drawings, the full specification and a site visit can be arranged through A365 Designs.')+'<div class="cg"><div>'+c+'</div><div class="fr"><img src="img/rec-b.jpg" alt=""><span class="k">The corner</span></div></div><p class="disc">'+disc+'</p>'+clean(mql)+foot('Contact')+'</section>')
